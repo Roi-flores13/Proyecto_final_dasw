@@ -154,20 +154,18 @@
             console.error(`Formulario a mostrar con ID '${showId}' no encontrado.`);
         }
         
-        // Reinicia la validación de contraseña al cambiar de formulario
         if (hideId === 'formRegister') {
             document.getElementById('differPasswords').classList.add('hidden');
         }
     }
 
-    // Validación de contraseñas para el formulario de registro
     document.getElementById('formRegister').addEventListener('submit', function(event) {
         const password = document.getElementById('password_capitan').value;
         const confirmPassword = document.getElementById('confirm_password_capitan').value;
         const differPasswords = document.getElementById('differPasswords');
 
         if (password !== confirmPassword) {
-            event.preventDefault(); // Detiene el envío del formulario
+            event.preventDefault();
             differPasswords.classList.remove('hidden');
         } else {
             differPasswords.classList.add('hidden');
