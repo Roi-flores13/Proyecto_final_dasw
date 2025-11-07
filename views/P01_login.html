@@ -1,123 +1,197 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login/Registro</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso y Registro de Liga</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(90deg,#270202, #760909);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-  <style>
-    body {
-      min-height: 100vh;
-      margin: 0;
-      background: linear-gradient(90deg, #270202, #760909);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .card {
-      width: 350px;
-      background-color: #270202;
-    }
-    .form-label {
-      color: white;
-    }
-
-    h3{
-      color: white;
-    }
-
-
-  </style>
-
-  <script>
-    function toggleForms(){
-      let form_login = document.getElementById('formLogin'),
-          form_register = document.getElementById('formRegister');
-      if(form_register.style.display === 'none'){
-        form_login.style.display = 'none';
-        form_register.style.display = 'block';
-      } else {
-        form_login.style.display = 'block';
-        form_register.style.display = 'none';
-      }
-    }
-  </script>
+    </style>
 </head>
 <body>
 
-  <div class="card shadow p-4 rounded-3">
+<div class="w-full max-w-md">
+    <div class="bg-[#270202] text-white p-10 sm:p-15 rounded-xl">
 
-    <form id="formLogin" class="text-center" action="./P01_home.html" method="get" style="display:block;">
-    <h3 class="mb-4">Iniciar Sesión</h3>
-    
-    <div class="mb-3 w-100 text-start">
-        <label for="usuario_login" class="form-label">Usuario</label>
-        <input type="text" id="usuario_login" name="usuario_login" class="form-control">
-    </div>
-    
-    <div class="mb-3 w-100 text-start">
-        <label for="password_login" class="form-label">Contraseña</label>
-        <input type="password" id="password_login" name="password_login" class="form-control" required minlength="8">
-    </div>
+        <!-- INICIAR SESIÓN -->
+        <form id="formLogin" class="text-center" action="./P01_home.html" method="get">
+            <h3 class="text-3xl font-bold mb-6">Iniciar Sesión</h3>
+            
+            <div class="mb-4 w-full text-left">
+                <label for="usuario_login" class="block text-sm font-medium mb-1">Usuario</label>
+                <input type="text" id="usuario_login" name="usuario_login" class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required>
+            </div>
+            
+            <div class="mb-4 w-full text-left">
+                <label for="password_login" class="block text-sm font-medium mb-1">Contraseña</label>
+                <input type="password" id="password_login" name="password_login" class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required minlength="8">
+            </div>
 
-    <div class="mb-3 w-100 text-start">
-        <label for="liga_login" class="form-label">Codigo de liga</label>
-        <input type="text" id="liga_login" name="liga_login" class="form-control">
-    </div>
-    
-    <button type="submit" class="btn btn-primary mt-2" style="height:50px; font-size:16px; width:200px;">
-        Ingresar
-    </button>
-    
-    <div class="mt-4">
-        <p class="mb-2" style="color:white">¿Eres nuevo por aquí?</p>
-        <button type="button" class="btn btn-outline-warning" style="width:200px; height:50px; font-size:16px;" onclick="toggleForms('login', 'register')">
-            Registrarme
-        </button>
-    </div>
-</form>
+            <div class="mb-6 w-full text-left">
+                <label for="liga_login" class="block text-sm font-medium mb-1">Código de Liga</label>
+                <input type="text" id="liga_login" name="liga_login" class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg">
+            </div>
+            
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition duration-200">
+                Ingresar
+            </button>
+            
+            <div class="mt-6 pt-4 border-t border-gray-200">
+                <p class="text-gray-200 mb-3">¿Eres nuevo por aquí?</p>
+                <button type="button" class="btn btn-outline-warning w-100 fw-bold py-3" onclick="toggleForms('formLogin', 'formRegister')">
+                    Registrarme
+                </button>
+            </div>
 
-    <form id="formRegister" class="text-center" action="./registro_capitan.php" method="post" style="display:none;">
-    
-    <h3 class="mb-4">Registro de Capitán</h3>
-    
-    <div class="mb-3 w-100 text-start">
-        <label for="nombre_capitan" class="form-label">Nombre de Usuario</label>
-        <input type="text" id="nombre_capitan" name="nombre_capitan" class="form-control">
-    </div>
-    
-    <div class="mb-3 w-100 text-start">
-        <label for="email_capitan" class="form-label">Email</label>
-        <input type="email" id="email_capitan" name="email_capitan" class="form-control">
-    </div>
-    
-    <div class="mb-3 w-100 text-start">
-        <label for="password_capitan" class="form-label">Contraseña</label>
-        <input type="password" id="password_capitan" name="password_capitan" class="form-control" required minlength="6">
-        <div class="form-text text-start"></div>
-    </div>
+            <div class="mt-3">
+                <button type="button" class="btn btn-outline-danger w-100 fw-bold py-3" onclick="toggleForms('formLogin', 'formCreateLeague')">
+                    Crear Liga
+                </button>
+            </div>
+        </form>
 
-    <div class="mb-3 w-100 text-start">
-        <label for="confirm_password_capitan" class="form-label">Confirmar Contraseña</label>
-        <input type="password" id="confirm_password_capitan" name="confirm_password_capitan" class="form-control" required minlength="6">
-        <div id="passwordHelp" class="form-text text-start"></div>
-    </div>
-    
-    <div class="mt-4">
-    <button type="submit" class="btn btn-success mt" style="height:50px; font-size:16px; width:200px;">
-        Crear Cuenta
-    </button>
-    </div>
+        <!-- REGISTRO DE CAPITÁN -->
+        <form id="formRegister" class="text-center hidden" action="./registro_capitan.php" method="post">
+            
+            <h3 class="text-3xl font-bold mb-6">Registro de Capitán</h3>
+            
+            <div class="mb-4 w-full text-left">
+                <label for="nombre_capitan" class="block text-sm font-medium mb-1">Nombre de Usuario</label>
+                <input type="text" id="nombre_capitan" name="nombre_capitan" class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required>
+            </div>
+            
+            <div class="mb-4 w-full text-left">
+                <label for="email_capitan" class="block text-sm font-medium mb-1">Email</label>
+                <input type="email" id="email_capitan" name="email_capitan" class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required>
+            </div>
+            
+            <div class="mb-4 w-full text-left">
+                <label for="password_capitan" class="block text-sm font-medium mb-1">Contraseña</label>
+                <input type="password" id="password_capitan" name="password_capitan" class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required minlength="8">
+            </div>
 
-    <div class="mt-4">
-        <button type="button" class="btn btn-outline-warning" style="width:200px; height:50px; font-size:16px;" onclick="toggleForms('register', 'login')">
-            Registrarme
-        </button>
-    </div>
-</form>
+            <div class="mb-6 w-full text-left">
+                <label for="confirm_password_capitan" class="block text-sm font-medium mb-1">Confirmar Contraseña</label>
+                <input type="password" id="confirm_password_capitan" name="confirm_password_capitan" class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required minlength="6">
+                <div id="passwordHelp" class="text-xs text-red-500 mt-1 text-left hidden">Las contraseñas no coinciden.</div>
+            </div>
+            
+            <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition duration-200">
+                Crear Cuenta
+            </button>
 
-  </div>
+            <div class="mt-6 pt-4 border-t border-gray-200">
+                <button type="button" class="w-full bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 rounded-lg transition duration-200" onclick="toggleForms('formRegister', 'formLogin')">
+                    Volver a Iniciar Sesión
+                </button>
+            </div>
+        </form>
+
+        <!-- CREAR LIGA -->
+        <form id="formCreateLeague" class="text-center hidden" action="./crear_liga.php" method="post">
+            
+            <h3 class="text-3xl font-bold mb-6">Crear Nueva Liga</h3>
+
+            <div class="mb-4 w-full text-left">
+                <label for="nombre_liga" class="block text-sm font-medium mb-1">Nombre de la Liga</label>
+                <input type="text" id="nombre_liga" name="nombre_liga" class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required>
+            </div>
+            
+            <div class="mb-4 w-full text-left">
+                <label for="equipos_max" class="block text-sm font-medium mb-1">Máximo de Equipos</label>
+                <input type="number" id="equipos_max" name="equipos_max" class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required min="2" max="32" value="8">
+                <div class="text-xs text-gray-300 mt-1 text-left">Mínimo 4, Máximo 16.</div>
+            </div>
+
+            <div class="mb-4 w-full text-left">
+                <label for="codigo_liga" class="block text-sm font-medium mb-1">Código de Liga (Para compartir)</label>
+                <input type="text" id="codigo_liga" name="codigo_liga" class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required minlength="6" maxlength="10">
+            </div>
+
+            <div class="mb-6 w-full text-left">
+                <label for="fecha_inicio" class="block text-sm font-medium mb-1">Fecha de Inicio Estimada</label>
+                <input type="date" id="fecha_inicio" name="fecha_inicio" class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required>
+            </div>
+            
+            <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-lg transition duration-200">
+                Crear Liga
+            </button>
+
+            <div class="mt-6 pt-4 border-t border-gray-200">
+                <button type="button" class="w-full bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 rounded-lg transition duration-200" onclick="toggleForms('formCreateLeague', 'formLogin')">
+                    Volver a Iniciar Sesión
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<script>
+    function toggleForms(hideId, showId) {
+        const formToHide = document.getElementById(hideId);
+        const formToShow = document.getElementById(showId);
+
+        if (formToHide) {
+            formToHide.classList.add('hidden');
+        } else {
+            console.error(`Formulario a ocultar con ID '${hideId}' no encontrado.`);
+        }
+        
+        if (formToShow) {
+            formToShow.classList.remove('hidden');
+        } else {
+            console.error(`Formulario a mostrar con ID '${showId}' no encontrado.`);
+        }
+        
+        // Reinicia la validación de contraseña al cambiar de formulario
+        if (hideId === 'formRegister') {
+            document.getElementById('passwordHelp').classList.add('hidden');
+        }
+    }
+
+    // Validación de contraseñas para el formulario de registro
+    document.getElementById('formRegister').addEventListener('submit', function(event) {
+        const password = document.getElementById('password_capitan').value;
+        const confirmPassword = document.getElementById('confirm_password_capitan').value;
+        const passwordHelp = document.getElementById('passwordHelp');
+
+        if (password !== confirmPassword) {
+            event.preventDefault(); // Detiene el envío del formulario
+            passwordHelp.classList.remove('hidden');
+        } else {
+            passwordHelp.classList.add('hidden');
+        }
+    });
+
+    // Ocultar la ayuda de contraseña si el usuario empieza a escribir y coincide
+    document.getElementById('confirm_password_capitan').addEventListener('input', function() {
+        const password = document.getElementById('password_capitan').value;
+        const confirmPassword = this.value;
+        const passwordHelp = document.getElementById('passwordHelp');
+
+        if (password === confirmPassword) {
+            passwordHelp.classList.add('hidden');
+        }
+    });
+
+    // Inicialmente, nos aseguramos de que solo el login se muestre (aunque ya está configurado en el HTML)
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('formLogin').classList.remove('hidden');
+        document.getElementById('formRegister').classList.add('hidden');
+        document.getElementById('formCreateLeague').classList.add('hidden');
+    });
+</script>
 
 </body>
 </html>
