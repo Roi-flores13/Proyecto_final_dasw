@@ -83,7 +83,7 @@
             <div class="mb-6 w-full text-left">
                 <label for="confirm_password_capitan" class="block text-sm font-medium mb-1">Confirmar Contraseña</label>
                 <input type="password" id="confirm_password_capitan" name="confirm_password_capitan" class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required minlength="6">
-                <div id="passwordHelp" class="text-xs text-red-500 mt-1 text-left hidden">Las contraseñas no coinciden.</div>
+                <div id="differPasswords" class="text-xs text-red-500 mt-1 text-left hidden">Las contraseñas no coinciden.</div>
             </div>
             
             <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition duration-200">
@@ -156,7 +156,7 @@
         
         // Reinicia la validación de contraseña al cambiar de formulario
         if (hideId === 'formRegister') {
-            document.getElementById('passwordHelp').classList.add('hidden');
+            document.getElementById('differPasswords').classList.add('hidden');
         }
     }
 
@@ -164,32 +164,14 @@
     document.getElementById('formRegister').addEventListener('submit', function(event) {
         const password = document.getElementById('password_capitan').value;
         const confirmPassword = document.getElementById('confirm_password_capitan').value;
-        const passwordHelp = document.getElementById('passwordHelp');
+        const differPasswords = document.getElementById('differPasswords');
 
         if (password !== confirmPassword) {
             event.preventDefault(); // Detiene el envío del formulario
-            passwordHelp.classList.remove('hidden');
+            differPasswords.classList.remove('hidden');
         } else {
-            passwordHelp.classList.add('hidden');
+            differPasswords.classList.add('hidden');
         }
-    });
-
-    // Ocultar la ayuda de contraseña si el usuario empieza a escribir y coincide
-    document.getElementById('confirm_password_capitan').addEventListener('input', function() {
-        const password = document.getElementById('password_capitan').value;
-        const confirmPassword = this.value;
-        const passwordHelp = document.getElementById('passwordHelp');
-
-        if (password === confirmPassword) {
-            passwordHelp.classList.add('hidden');
-        }
-    });
-
-    // Inicialmente, nos aseguramos de que solo el login se muestre (aunque ya está configurado en el HTML)
-    document.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('formLogin').classList.remove('hidden');
-        document.getElementById('formRegister').classList.add('hidden');
-        document.getElementById('formCreateLeague').classList.add('hidden');
     });
 </script>
 
