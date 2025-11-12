@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Equipo y Jugadores</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fac6;
+            min-height: 100vh;
+        }
+        .header-bg {
+            background-color: #760909;
+        }
+        .file-upload-container {
+            border: 2px dashed #5b0303;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            cursor: pointer;
+        }
+        .file-upload-container:hover {
+            border-color: #5b0707;
+        }
+        #imagePreview {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 4px solid #760909;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark header-bg shadow-sm">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold fs-4" href="#">
+            <i class="bi bi-shield-fill"></i> Mi Liga
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="general.html">General</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="tabla_general.html">Tabla General</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="tabla_goleadora.html">Tabla Goleadora</a>
+                </li>
+            </ul>
+            
+            <div class="d-flex align-items-center">
+                <span class="navbar-text text-white me-3">
+                    Capitán: Usuario
+                </span>
+                <a href="editar_equipo.html" class="text-white text-decoration-none" title="Editar Equipo y Jugadores">
+                    <i class="bi bi-gear-fill fs-5"></i>
+                </a>
+            </div>
+
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            
+            <h2 class="mb-4 fw-bold"><i class="bi bi-pencil-square"></i> Administrar Equipo</h2>
+
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+
+                    <ul class="nav nav-tabs nav-fill mb-4" id="adminTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="equipo-tab" data-bs-toggle="tab" data-bs-target="#equipo" type="button" role="tab" aria-controls="equipo" aria-selected="true">
+                                <i class="bi bi-shield-check"></i> Editar Equipo
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="jugadores-tab" data-bs-toggle="tab" data-bs-target="#jugadores" type="button" role="tab" aria-controls="jugadores" aria-selected="false">
+                                <i class="bi bi-people-fill"></i> Administrar Jugadores
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="sede-tab" data-bs-toggle="tab" data-bs-target="#sede" type="button" role="tab" aria-controls="sede" aria-selected="false">
+                                <i class="bi bi-geo-alt-fill"></i> Editar Sede
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="adminTabContent">
+                        
+                        <div class="tab-pane fade show active" id="equipo" role="tabpanel" aria-labelledby="equipo-tab">
+                            <h4 class="mb-3">Datos del Equipo</h4>
+                            <p class="text-muted">Actualiza el nombre y el escudo de tu equipo.</p>
+                            
+                            <form id="formEditarEquipo" action="#" method="post" enctype="multipart/form-data">
+                                <div class="mb-4">
+                                    <label for="nombreEquipo" class="form-label fw-bold">Nombre del Equipo</label>
+                                    <input type="text" class="form-control form-control-lg" id="nombreEquipo" name="nombreEquipo" value="Real Atlético" required>
+                                </div>
+
+                                <div class="mb-4 text-center">
+                                    <label class="form-label fw-bold d-block">Escudo / Logo del Equipo</label>
+                                    <img id="imagePreview" src="https://placehold.co/150x150/760909/ffffff?text=LOGO" alt="Previsualización del Escudo" class="mx-auto d-block">
+                                    <label for="fotoEquipo" class="file-upload-container bg-light w-100 mt-3 d-flex flex-column align-items-center justify-content-center">
+                                        <i class="bi bi-cloud-arrow-up-fill fs-2 text-secondary"></i>
+                                        <span class="text-muted">Haz clic para cambiar el logo (PNG, JPG)</span>
+                                        <input type="file" class="d-none" id="fotoEquipo" name="fotoEquipo" accept="image/png, image/jpeg">
+                                    </label>
+                                </div>
+                                
+                                <div class="d-grid mt-4">
+                                    <button type="submit" class="btn btn-primary btn-lg fw-bold">
+                                        Guardar Cambios del Equipo
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="tab-pane fade" id="jugadores" role="tabpanel" aria-labelledby="jugadores-tab">
+                            
+                            <h4 class="mb-3">Agregar Nuevo Jugador</h4>
+                            <form class="row g-3 mb-4 p-3 bg-light rounded border" action="#" method="post">
+                                <div class="col-md-5">
+                                    <label for="nombreJugador" class="form-label">Nombre del Jugador</label>
+                                    <input type="text" class="form-control" id="nombreJugador" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="posicionJugador" class="form-label">Posición</label>
+                                    <select id="posicionJugador" class="form-select" required>
+                                        <option value="" selected disabled>Elegir...</option>
+                                        <option value="Defensa">Defensa</option>
+                                        <option value="Medio">Medio</option>
+                                        <option value="Delantero">Delantero</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <label for="dorsalJugador" class="form-label">Dorsal</label>
+                                    <input type="number" class="form-control" id="dorsalJugador" min="1" max="99">
+                                </div>
+                                <div class="col-md-2 d-flex align-items-end">
+                                    <button type="submit" class="btn btn-success w-100">Agregar</button>
+                                </div>
+                            </form>
+
+                            <hr>
+
+                            <h4 class="mb-3 mt-4">Plantilla Actual</h4>
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Nombre</th>
+                                            <th scope="col">Posición</th>
+                                            <th scope="col" class="text-center">Dorsal</th>
+                                            <th scope="col" class="text-end">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="fw-bold">Miguel "Matador" Sánchez</td>
+                                            <td>Delantero</td>
+                                            <td class="text-center">9</td>
+                                            <td class="text-end">
+                                                <button class="btn btn-outline-primary btn-sm"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#editPlayerModal"
+                                                        data-player-id="1"
+                                                        data-player-name="Miguel 'Matador' Sánchez"
+                                                        data-player-position="Delantero"
+                                                        data-player-dorsal="9">
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
+                                                <button class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Esteban Paredes</td>
+                                            <td>Delantero</td>
+                                            <td class="text-center">10</td>
+                                            <td class="text-end">
+                                                <button class="btn btn-outline-primary btn-sm"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#editPlayerModal"
+                                                        data-player-id="2"
+                                                        data-player-name="Esteban Paredes"
+                                                        data-player-position="Delantero"
+                                                        data-player-dorsal="10">
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
+                                                <button class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Alan Torres</td>
+                                            <td>Medio</td>
+                                            <td class="text-center">8</td>
+                                            <td class="text-end">
+                                                <button class="btn btn-outline-primary btn-sm"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#editPlayerModal"
+                                                        data-player-id="3"
+                                                        data-player-name="Alan Torres"
+                                                        data-player-position="Medio"
+                                                        data-player-dorsal="8">
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
+                                                <button class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="sede" role="tabpanel" aria-labelledby="sede-tab">
+                            <h4 class="mb-3">Datos de la Sede</h4>
+                            <p class="text-muted">Especifica la cancha principal donde tu equipo jugará como local.</p>
+
+                            <form action="#" method="post">
+                                <div class="mb-4">
+                                    <label for="nombreSede" class="form-label fw-bold">Nombre de la Cancha / Sede</label>
+                                    <input type="text" class="form-control form-control-lg" id="nombreSede" name="nombreSede" value="Estadio Deportivo Halcón" required>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="direccionSede" class="form-label fw-bold">Dirección de la Sede</label>
+                                    <textarea class="form-control" id="direccionSede" name="direccionSede" rows="3" required>Av. Siempre Viva 123, Col. Centro, Ciudad.</textarea>
+                                </div>
+                                <div class="d-grid mt-4">
+                                    <button type="submit" class="btn btn-primary btn-lg fw-bold">
+                                        Guardar Cambios de la Sede
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div> </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="editPlayerModal" tabindex="-1" aria-labelledby="editPlayerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            
+            <form action="#" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editPlayerModalLabel">Editar Jugador</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <div class="modal-body">
+                    <input type="hidden" id="editPlayerId" name="playerId">
+
+                    <div class="mb-3">
+                        <label for="editPlayerName" class="form-label">Nombre del Jugador</label>
+                        <input type="text" class="form-control" id="editPlayerName" name="playerName" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="editPlayerPosition" class="form-label">Posición</label>
+                        <select id="editPlayerPosition" class="form-select" name="playerPosition" required>
+                            <option value="Defensa">Defensa</option>
+                            <option value="Medio">Medio</option>
+                            <option value="Delantero">Delantero</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editPlayerDorsal" class="form-label">Dorsal</label>
+                        <input type="number" class="form-control" id="editPlayerDorsal" name="playerDorsal" min="1" max="99">
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    
+    // --- Script para previsualizar imagen (de tu código anterior) ---
+    const fotoEquipoInput = document.getElementById('fotoEquipo');
+    const imagePreview = document.getElementById('imagePreview');
+
+    if (fotoEquipoInput) {
+        fotoEquipoInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.alt = `Escudo de ${document.getElementById('nombreEquipo').value || 'Equipo'}`;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                imagePreview.src = "https://placehold.co/150x150/760909/ffffff?text=LOGO";
+                imagePreview.alt = "Previsualización del Escudo";
+            }
+        });
+    }
+
+    
+    // --- Script para el Modal de Edición de Jugador (NUEVO) ---
+    const editPlayerModal = document.getElementById('editPlayerModal');
+    if (editPlayerModal) {
+        
+        // Escuchamos el evento 'show.bs.modal', que se dispara JUSTO ANTES de que el modal aparezca
+        editPlayerModal.addEventListener('show.bs.modal', function (event) {
+            
+            // 1. Obtenemos el botón (el lápiz) que disparó el modal
+            const button = event.relatedTarget;
+
+            // 2. Extraemos la información de los atributos 'data-*' del botón
+            const playerId = button.dataset.playerId;
+            const playerName = button.dataset.playerName;
+            const playerPosition = button.dataset.playerPosition;
+            const playerDorsal = button.dataset.playerDorsal;
+
+            // 3. Obtenemos los campos (inputs) DENTRO del modal
+            const modalTitle = editPlayerModal.querySelector('.modal-title');
+            const inputId = editPlayerModal.querySelector('#editPlayerId');
+            const inputName = editPlayerModal.querySelector('#editPlayerName');
+            const inputPosition = editPlayerModal.querySelector('#editPlayerPosition');
+            const inputDorsal = editPlayerModal.querySelector('#editPlayerDorsal');
+
+            // 4. Actualizamos los valores de los inputs del modal con la info del jugador
+            modalTitle.textContent = `Editar a: ${playerName}`; // Actualiza el título del modal
+            inputId.value = playerId;
+            inputName.value = playerName;
+            inputPosition.value = playerPosition;
+            inputDorsal.value = playerDorsal;
+        });
+    }
+
+});
+</script>
+</body>
+</html>

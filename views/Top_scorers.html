@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabla de Goleadores</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fac6;
+            min-height: 100vh;
+        }
+        .header-bg {
+            background-color: #760909;
+        }
+        .card-custom {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        /* Estilos para los botones de filtro */
+        .filter-btn-group .btn.active {
+            background-color: #760909;
+            border-color: #760909;
+            color: white;
+        }
+        .filter-btn-group .btn {
+            color: #760909;
+            border-color: #760909;
+        }
+        .filter-btn-group .btn:hover:not(.active) {
+            background-color: #fdf0f0;
+        }
+        .players-table th {
+            background-color: #f9f9f9;
+        }
+        .players-table .rank {
+            font-weight: bold;
+            font-size: 1.1rem;
+            width: 50px;
+        }
+        .players-table .goals {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #333;
+            width: 100px;
+            text-align: center;
+        }
+        /* Estilo para las posiciones */
+        .badge.pos-delantero { background-color: #dc3545; }
+        .badge.pos-medio { background-color: #0d6efd; }
+        .badge.pos-defensa { background-color: #198754; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark header-bg shadow-sm">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold fs-4" href="#">
+            <i class="bi bi-shield-fill"></i> Mi Liga
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="General_view.html">General</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="Tabla_general.html">Tabla General</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#">Tabla Goleadora</a>
+                </li>
+            </ul>
+            
+            <div class="d-flex align-items-center">
+                <span class="navbar-text text-white me-3">
+                    Capitán: Usuario
+                </span>
+                <a href="editar_equipo.html" class="text-white text-decoration-none" title="Editar Equipo y Jugadores">
+                    <i class="bi bi-gear-fill fs-5"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+
+            <div class="card card-custom p-4 p-md-5">
+                <div class="card-body">
+
+                    <h2 class="card-title text-center mb-4 fw-bold">
+                        <i class="bi bi-trophy-fill text-warning"></i> Tabla de Goleadores
+                    </h2>
+                    <p class="text-center text-muted mb-4">
+                        Consulta los máximos anotadores de la liga.
+                    </p>
+
+                    <div class="text-center mb-4">
+                        <div class="btn-group filter-btn-group" role="group" aria-label="Filtros de posición">
+                            <button type"button" class="btn btn-outline-danger active" data-filter="todos">Todos</button>
+                            <button type"button" class="btn btn-outline-danger" data-filter="delantero">Delanteros</button>
+                            <button type"button" class="btn btn-outline-danger" data-filter="medio">Medios</button>
+                            <button type"button" class="btn btn-outline-danger" data-filter="defensa">Defensas</button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle players-table">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col" class="rank">#</th>
+                                    <th scope="col">Jugador</th>
+                                    <th scope="col">Equipo</th>
+                                    <th scope="col">Posición</th>
+                                    <th scope="col" class="text-center">Goles</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-position="delantero">
+                                    <td class="rank">1</td>
+                                    <td>Miguel "El Matador" Sánchez</td>
+                                    <td>Real Atlético</td>
+                                    <td><span class="badge pos-delantero">Delantero</span></td>
+                                    <td class="goals">12</td>
+                                </tr>
+                                
+                                <tr data-position="delantero">
+                                    <td class="rank">2</td>
+                                    <td>Javier Acosta</td>
+                                    <td>Los Cuervos FC</td>
+                                    <td><span class="badge pos-delantero">Delantero</span></td>
+                                    <td class="goals">10</td>
+                                </tr>
+
+                                <tr data-position="medio">
+                                    <td class="rank">3</td>
+                                    <td>Carlos "El Motor" Ruiz</td>
+                                    <td>Deportivo Halcones</td>
+                                    <td><span class="badge pos-medio">Medio</span></td>
+                                    <td class="goals">8</td>
+                                </tr>
+                                
+                                <tr data-position="delantero">
+                                    <td class="rank">4</td>
+                                    <td>Esteban Paredes</td>
+                                    <td>Real Atlético</td>
+                                    <td><span class="badge pos-delantero">Delantero</span></td>
+                                    <td class="goals">7</td>
+                                </tr>
+
+                                <tr data-position="medio">
+                                    <td class="rank">5</td>
+                                    <td>Ricardo Mendoza</td>
+                                    <td>Los Cuervos FC</td>
+                                    <td><span class="badge pos-medio">Medio</span></td>
+                                    <td class="goals">5</td>
+                                </tr>
+
+                                <tr data-position="defensa">
+                                    <td class="rank">6</td>
+                                    <td>Antonio "La Muralla" López</td>
+                                    <td>La Furia Roja</td>
+                                    <td><span class="badge pos-defensa">Defensa</span></td>
+                                    <td class="goals">3</td>
+                                </tr>
+
+                                <tr data-position="defensa">
+                                    <td class="rank">7</td>
+                                    <td>Luis Hernández</td>
+                                    <td>Deportivo Halcones</td>
+                                    <td><span class="badge pos-defensa">Defensa</span></td>
+                                    <td class="goals">2</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div> </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const filterButtons = document.querySelectorAll('.filter-btn-group .btn');
+        const playerRows = document.querySelectorAll('.players-table tbody tr');
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const filter = button.dataset.filter;
+
+                // 1. Manejar el estado activo del botón
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                // 2. Filtrar la tabla
+                playerRows.forEach(row => {
+                    const rowPosition = row.dataset.position;
+
+                    // Si el filtro es "todos" O la posición de la fila coincide con el filtro...
+                    if (filter === 'todos' || rowPosition === filter) {
+                        row.style.display = ''; // Muestra la fila
+                    } else {
+                        row.style.display = 'none'; // Oculta la fila
+                    }
+                });
+            });
+        });
+    });
+</script>
+
+</body>
+</html>
