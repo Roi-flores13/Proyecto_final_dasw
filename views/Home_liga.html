@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home de Liga</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fac6;
+            min-height: 100vh;
+        }
+        .header-bg {
+            background-color: #760909;
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark header-bg shadow-sm">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold fs-4" href="#">
+            <i class="bi bi-shield-fill"></i> Mi Liga
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNav" aria-controls="navbarNav"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <!-- Link a la vista general del equipo -->
+                <li class="nav-item">
+                    <a class="nav-link" href="General_view.html">General</a>
+                </li>
+                <!-- Link a la tabla general de la liga -->
+                <li class="nav-item">
+                    <a class="nav-link" href="Tabla_general.html">Tabla General</a>
+                </li>
+                <!-- Link a la tabla de goleadores -->
+                <li class="nav-item">
+                    <a class="nav-link" href="Top_scorers.html">Tabla Goleadora</a>
+                </li>
+            </ul>
+            <div class="d-flex align-items-center">
+                <!-- Texto que indica que esta vista es pública, sin login -->
+                <span class="navbar-text text-white me-3">
+                        Público
+                    </span>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Contenedor principal del contenido de la página -->
+<main class="container py-5" style="max-width: 720px;">
+    <!-- Título principal de la página -->
+    <h1 class="mb-3">
+        <i class="bi bi-search"></i> Busca tu liga
+    </h1>
+    <p class="text-muted">
+        Escribe el nombre o el código de la liga para ver su información pública.
+    </p>
+
+    <!-- Formulario para buscar una liga-->
+    <form action="Tabla_general.html" method="get" class="row g-3">
+        <!-- Columna que ocupa todo el ancho para el input -->
+        <div class="col-12">
+            <!-- Etiqueta del campo de texto -->
+            <label class="form-label" for="liga">Nombre o código de liga</label>
+            <!-- Campo de texto donde se escribe el nombre o código -->
+            <input id="liga" name="liga" type="text" class="form-control"
+                   placeholder="Ej. Liga Intersemanal 2025" required>
+        </div>
+        <!-- Columna para el botón -->
+        <div class="col-12">
+            <!-- Botón que envía el formulario y navega a la tabla general -->
+            <button type="submit" class="btn btn-primary">
+                Entrar
+            </button>
+        </div>
+    </form>
+
+    <!-- Línea separadora para dividir secciones visualmente -->
+    <hr class="my-5">
+
+    <!-- Subtítulo para la sección de ligas recientes -->
+    <h2 class="h5">Ligas recientes</h2>
+    <!-- Lista de ligas de ejemplo usando una lista de Bootstrap -->
+    <ul class="list-group">
+        <!-- Primer elemento de la lista, una liga de ejemplo -->
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <!-- Nombre de la liga de ejemplo -->
+            Liga Intersemanal 2025
+            <!-- Botón pequeño para ir a ver la información de esa liga -->
+            <a class="btn btn-sm btn-outline-primary" href="Tabla_general.html">
+                Ver
+            </a>
+        </li>
+        <!-- Segundo elemento de la lista, otra liga de ejemplo -->
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            Torneo Sabatino Zona Centro
+            <a class="btn btn-sm btn-outline-primary" href="Tabla_general.html">
+                Ver
+            </a>
+        </li>
+    </ul>
+
+    <!-- Sección extra con un botón para ir a la página de partidos -->
+    <div class="mt-4">
+        <!-- Botón que navega a la vista de partidos-->
+        <a class="btn btn-outline-secondary btn-sm" href="Partidos.html">
+            Ver partidos
+        </a>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+</script>
+</body>
+</html>
