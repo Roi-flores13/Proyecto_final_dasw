@@ -1,6 +1,9 @@
 // Importamos el modelo de usuario para poder crear y buscar usuarios
 const User = require("../models/user_model");
 
+// Importamos bcryptjs para poder encriptar y comparar contraseñas
+const bcrypt = require("bcryptjs");
+
 // Creamos una función para registrar usuarios nuevos
 const registerUser = async (req, res) => {
     try {
@@ -16,12 +19,18 @@ const registerUser = async (req, res) => {
             return res.status(400).json({ mensaje: "El correo ya está registrado" });
         }
 
-        // Creamos un nuevo usuario con la contraseña tal cual la mandaron
+        // Generamos un "salt" para encriptar la contraseña
+        const salt = await bcrypt.genSalt(10);
+
+        // Encriptamos la contraseña que mandó el usuario
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        // Creamos un nuevo usuario con la contraseña ya encriptada
         const newUser = new User({
-            nombre,    // Guardamos el nombre que mandó el usuario
-            email,     // Guardamos el correo que mandó el usuario
-            password,  // Guardamos la contraseña sin encriptar
-            rol        // Guardamos el rol que mandó el usuario
+            nombre,                 // Guardamos el nombre tal cual lo mandaron
+            email,                  // Guardamos el correo tal cual lo mandaron
+            password: hashedPassword, // Guardamos la contraseña encriptada
+            rol                     // Guardamos el rol que mandaron (capitán o superadmin)
         });
 
         // Guardamos el usuario en la base de datos
@@ -61,8 +70,8 @@ const loginUser = async (req, res) => {
             return res.status(400).json({ mensaje: "Credenciales inválidas" });
         }
 
-        // Comparamos la contraseña que mandó el usuario con la que está guardada
-        const esPasswordCorrecta = password === user.password;
+        // Comparamos la contraseña que mandó el usuario con la que está encriptada en la base
+        const esPasswordCorrecta = await bcrypt.compare(password, user.password);
 
         // Si la contraseña no coincide, mandamos error
         if (!esPasswordCorrecta) {

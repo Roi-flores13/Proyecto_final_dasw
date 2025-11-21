@@ -1,134 +1,236 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <!-- Definimos la codificación para soportar acentos -->
     <meta charset="UTF-8">
+    <!-- Hacemos que se adapte bien a pantallas pequeñas -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Título que se ve en la pestaña del navegador -->
     <title>Acceso y Registro de Liga</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <!-- Incluimos Bootstrap para estilos y componentes -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+          crossorigin="anonymous">
+
+    <!-- Incluimos Tailwind para utilidades rápidas de diseño -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Estilos básicos de la página -->
     <style>
         body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(90deg,#270202, #760909);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            font-family: 'Inter', sans-serif;          /* Usamos una fuente limpia */
+            background: linear-gradient(90deg,#270202, #760909); /* Fondo degradado */
+            min-height: 100vh;                         /* Altura mínima toda la pantalla */
+            display: flex;                             /* Usamos flexbox para centrar */
+            align-items: center;                       /* Centramos verticalmente */
+            justify-content: center;                   /* Centramos horizontalmente */
         }
-
     </style>
 </head>
 <body>
 
+<!-- Contenedor principal de la tarjeta -->
 <div class="w-full max-w-md">
     <div class="bg-[#270202] text-white p-10 sm:p-15 rounded-xl">
 
-        <!-- INICIAR SESIÓN -->
-        <form id="formLogin" class="text-center" action="Add_team.html" method="get">
+        <!-- FORMULARIO: INICIAR SESIÓN -->
+        <form id="form-login" class="text-center">
+            <!-- Título del formulario -->
             <h3 class="text-3xl font-bold mb-6">Iniciar Sesión</h3>
-            
+
+            <!-- Campo de correo electrónico -->
             <div class="mb-4 w-full text-left">
-                <label for="usuario_login" class="block text-sm font-medium mb-1">Usuario</label>
-                <input type="text" id="usuario_login" name="usuario_login" class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required>
-            </div>
-            
-            <div class="mb-4 w-full text-left">
-                <label for="password_login" class="block text-sm font-medium mb-1">Contraseña</label>
-                <input type="password" id="password_login" name="password_login" class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required minlength="8">
+                <label for="email" class="block text-sm font-medium mb-1">Correo electrónico</label>
+                <input type="email"
+                       id="email"
+                       name="email"
+                       class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg"
+                       required>
             </div>
 
+            <!-- Campo de contraseña -->
+            <div class="mb-4 w-full text-left">
+                <label for="password" class="block text-sm font-medium mb-1">Contraseña</label>
+                <input type="password"
+                       id="password"
+                       name="password"
+                       class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg"
+                       required
+                       minlength="8">
+            </div>
+
+            <!-- Campo de código de liga (todavía no conectado al backend) -->
             <div class="mb-6 w-full text-left">
                 <label for="liga_login" class="block text-sm font-medium mb-1">Código de Liga</label>
-                <input type="text" id="liga_login" name="liga_login" class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg">
+                <input type="text"
+                       id="liga_login"
+                       name="liga_login"
+                       class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg">
             </div>
-            
-            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg">
+
+            <!-- Botón para enviar el login -->
+            <button type="submit"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg">
                 Ingresar
             </button>
-            
+
+            <!-- Div donde mostraremos mensajes de error o éxito -->
+            <div id="mensaje" class="mt-3"></div>
+
+            <!-- Botón para ir al formulario de registro -->
             <div class="mt-6 pt-4 border-t border-gray-200">
                 <p class="text-gray-200 mb-3">¿Eres nuevo por aquí?</p>
-                <button type="button" class="btn btn-outline-warning w-2/3 fw-bold py-3" onclick="toggleForms('formLogin', 'formRegister')">
+                <button type="button"
+                        class="btn btn-outline-warning w-2/3 fw-bold py-3"
+                        onclick="toggleForms('form-login', 'form-register')">
                     Registrarme
                 </button>
             </div>
 
+            <!-- Botón para ir al formulario de crear liga -->
             <div class="mt-3">
-                <button type="button" class="btn btn-outline-danger w-2/3 fw-bold py-3" onclick="toggleForms('formLogin', 'formCreateLeague')">
+                <button type="button"
+                        class="btn btn-outline-danger w-2/3 fw-bold py-3"
+                        onclick="toggleForms('form-login', 'form-create-league')">
                     Crear Liga
                 </button>
             </div>
         </form>
 
-        <!-- REGISTRO DE CAPITÁN -->
-        <form id="formRegister" class="text-center hidden" action="./registro_capitan.php" method="post">
-            
+        <!-- FORMULARIO: REGISTRO DE CAPITÁN -->
+        <form id="form-register" class="text-center hidden">
+            <!-- Título del formulario -->
             <h3 class="text-3xl font-bold mb-6">Registro de Capitán</h3>
-            
+
+            <!-- Campo nombre de usuario -->
             <div class="mb-4 w-full text-left">
                 <label for="nombre_capitan" class="block text-sm font-medium mb-1">Nombre de Usuario</label>
-                <input type="text" id="nombre_capitan" name="nombre_capitan" class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required>
-            </div>
-            
-            <div class="mb-4 w-full text-left">
-                <label for="email_capitan" class="block text-sm font-medium mb-1">Email</label>
-                <input type="email" id="email_capitan" name="email_capitan" class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required>
-            </div>
-            
-            <div class="mb-4 w-full text-left">
-                <label for="password_capitan" class="block text-sm font-medium mb-1">Contraseña</label>
-                <input type="password" id="password_capitan" name="password_capitan" class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required minlength="8">
+                <input type="text"
+                       id="nombre_capitan"
+                       name="nombre_capitan"
+                       class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg"
+                       required>
             </div>
 
+            <!-- Campo email de capitán -->
+            <div class="mb-4 w-full text-left">
+                <label for="email_capitan" class="block text-sm font-medium mb-1">Email</label>
+                <input type="email"
+                       id="email_capitan"
+                       name="email_capitan"
+                       class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg"
+                       required>
+            </div>
+
+            <!-- Campo contraseña -->
+            <div class="mb-4 w-full text-left">
+                <label for="password_capitan" class="block text-sm font-medium mb-1">Contraseña</label>
+                <input type="password"
+                       id="password_capitan"
+                       name="password_capitan"
+                       class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg"
+                       required
+                       minlength="8">
+            </div>
+
+            <!-- Campo confirmar contraseña -->
             <div class="mb-6 w-full text-left">
                 <label for="confirm_password_capitan" class="block text-sm font-medium mb-1">Confirmar Contraseña</label>
-                <input type="password" id="confirm_password_capitan" name="confirm_password_capitan" class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required minlength="6">
-                <div id="differPasswords" class="text-xs text-red-500 mt-1 text-left hidden">Las contraseñas no coinciden.</div>
+                <input type="password"
+                       id="confirm_password_capitan"
+                       name="confirm_password_capitan"
+                       class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg"
+                       required
+                       minlength="6">
+                <!-- Mensaje que se muestra si las contraseñas no coinciden -->
+                <div id="differPasswords"
+                     class="text-xs text-red-500 mt-1 text-left hidden">
+                    Las contraseñas no coinciden.
+                </div>
             </div>
-            
-            <button type="submit" class="w-2/3 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg">
+
+            <!-- Botón para enviar el registro -->
+            <button type="submit"
+                    class="w-2/3 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg">
                 Crear Cuenta
             </button>
 
+            <!-- Botón para volver al login -->
             <div class="mt-6 pt-4 border-t border-gray-200">
-                <button type="button" class="w-2/3 bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 rounded-lg" onclick="toggleForms('formRegister', 'formLogin')">
+                <button type="button"
+                        class="w-2/3 bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 rounded-lg"
+                        onclick="toggleForms('form-register', 'form-login')">
                     Volver a Iniciar Sesión
                 </button>
             </div>
         </form>
 
-        <!-- CREAR LIGA -->
-        <form id="formCreateLeague" class="text-center hidden" action="./crear_liga.php" method="post">
-            
+        <!-- FORMULARIO: CREAR LIGA -->
+        <form id="form-create-league" class="text-center hidden">
+            <!-- Título del formulario -->
             <h3 class="text-3xl font-bold mb-6">Crear Nueva Liga</h3>
 
+            <!-- Campo nombre de la liga -->
             <div class="mb-4 w-full text-left">
                 <label for="nombre_liga" class="block text-sm font-medium mb-1">Nombre de la Liga</label>
-                <input type="text" id="nombre_liga" name="nombre_liga" class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required>
+                <input type="text"
+                       id="nombre_liga"
+                       name="nombre_liga"
+                       class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg"
+                       required>
             </div>
-            
+
+            <!-- Campo máximo de equipos (texto indica 4–16, pero el input permite 2–32) -->
             <div class="mb-4 w-full text-left">
                 <label for="equipos_max" class="block text-sm font-medium mb-1">Máximo de Equipos</label>
-                <input type="number" id="equipos_max" name="equipos_max" class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required min="2" max="32" value="8">
+                <input type="number"
+                       id="equipos_max"
+                       name="equipos_max"
+                       class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg"
+                       required
+                       min="2"
+                       max="32"
+                       value="8">
                 <div class="text-xs text-gray-300 mt-1 text-left">Mínimo 4, Máximo 16.</div>
             </div>
 
+            <!-- Campo código de liga -->
             <div class="mb-4 w-full text-left">
-                <label for="codigo_liga" class="block text-sm font-medium mb-1">Código de Liga (Para compartir)</label>
-                <input type="text" id="codigo_liga" name="codigo_liga" class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required minlength="6" maxlength="10">
+                <label for="codigo_liga" class="block text-sm font-medium mb-1">
+                    Código de Liga (Para compartir)
+                </label>
+                <input type="text"
+                       id="codigo_liga"
+                       name="codigo_liga"
+                       class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg"
+                       required
+                       minlength="6"
+                       maxlength="10">
             </div>
 
+            <!-- Campo fecha de inicio -->
             <div class="mb-6 w-full text-left">
                 <label for="fecha_inicio" class="block text-sm font-medium mb-1">Fecha de Inicio Estimada</label>
-                <input type="date" id="fecha_inicio" name="fecha_inicio" class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required>
+                <input type="date"
+                       id="fecha_inicio"
+                       name="fecha_inicio"
+                       class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg"
+                       required>
             </div>
-            
-            <button type="submit" class="w-2/3 bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-lg">
+
+            <!-- Botón para enviar el formulario de liga (todavía no conectado a backend) -->
+            <button type="submit"
+                    class="w-2/3 bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-lg">
                 Crear Liga
             </button>
 
+            <!-- Botón para volver al login -->
             <div class="mt-6 pt-4 border-t border-gray-200">
-                <button type="button" class="w-2/3 bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 rounded-lg" onclick="toggleForms('formCreateLeague', 'formLogin')">
+                <button type="button"
+                        class="w-2/3 bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 rounded-lg"
+                        onclick="toggleForms('form-create-league', 'form-login')">
                     Volver a Iniciar Sesión
                 </button>
             </div>
@@ -137,41 +239,39 @@
     </div>
 </div>
 
+<!-- Función para cambiar entre formularios -->
 <script>
     function toggleForms(hideId, showId) {
+        // Obtenemos el formulario que vamos a ocultar
         const formToHide = document.getElementById(hideId);
+        // Obtenemos el formulario que vamos a mostrar
         const formToShow = document.getElementById(showId);
 
+        // Si encontramos el formulario a ocultar, le agregamos la clase hidden
         if (formToHide) {
             formToHide.classList.add('hidden');
         } else {
             console.error(`Formulario a ocultar con ID '${hideId}' no encontrado.`);
         }
-        
+
+        // Si encontramos el formulario a mostrar, le quitamos la clase hidden
         if (formToShow) {
             formToShow.classList.remove('hidden');
         } else {
             console.error(`Formulario a mostrar con ID '${showId}' no encontrado.`);
         }
-        
-        if (hideId === 'formRegister') {
-            document.getElementById('differPasswords').classList.add('hidden');
+
+        // Si estamos ocultando el formulario de registro, escondemos también el mensaje de contraseñas distintas
+        if (hideId === 'form-register') {
+            const differPasswords = document.getElementById('differPasswords');
+            if (differPasswords) {
+                differPasswords.classList.add('hidden');
+            }
         }
     }
-
-    document.getElementById('formRegister').addEventListener('submit', function(event) {
-        const password = document.getElementById('password_capitan').value;
-        const confirmPassword = document.getElementById('confirm_password_capitan').value;
-        const differPasswords = document.getElementById('differPasswords');
-
-        if (password !== confirmPassword) {
-            event.preventDefault();
-            differPasswords.classList.remove('hidden');
-        } else {
-            differPasswords.classList.add('hidden');
-        }
-    });
 </script>
 
+<!-- Cargamos el archivo de JavaScript que maneja login y registro -->
+<script src="../js/login.js"></script>
 </body>
 </html>
