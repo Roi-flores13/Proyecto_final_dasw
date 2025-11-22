@@ -11,7 +11,7 @@
     <!-- Incluimos Bootstrap para estilos y componentes -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
           rel="stylesheet"
-          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+          xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
           crossorigin="anonymous">
 
     <!-- Incluimos Tailwind para utilidades rápidas de diseño -->
@@ -26,6 +26,12 @@
             display: flex;                             /* Usamos flexbox para centrar */
             align-items: center;                       /* Centramos verticalmente */
             justify-content: center;                   /* Centramos horizontalmente */
+        }
+        /* Estilo para el modal oscuro */
+        .modal-content-dark {
+            background-color: #270202;
+            color: white;
+            border: 1px solid #760909;
         }
     </style>
 </head>
@@ -61,7 +67,7 @@
                        minlength="8">
             </div>
 
-            <!-- Campo de código de liga (todavía no conectado al backend) -->
+            <!-- Campo de código de liga (opcional en login directo, mantenido del original) -->
             <div class="mb-6 w-full text-left">
                 <label for="liga_login" class="block text-sm font-medium mb-1">Código de Liga</label>
                 <input type="text"
@@ -95,6 +101,16 @@
                         class="btn btn-outline-danger w-2/3 fw-bold py-3"
                         onclick="toggleForms('form-login', 'form-create-league')">
                     Crear Liga
+                </button>
+            </div>
+
+            <!-- VISITAR LIGA -->
+            <div class="mt-3">
+                <button type="button"
+                        class="btn btn-outline-info w-2/3 fw-bold py-3 text-white"
+                        data-bs-toggle="modal" 
+                        data-bs-target="#modalVisitarLiga">
+                    Visitar Liga
                 </button>
             </div>
         </form>
@@ -182,7 +198,7 @@
                        required>
             </div>
 
-            <!-- Campo máximo de equipos (texto indica 4–16, pero el input permite 2–32) -->
+            <!-- Campo máximo de equipos -->
             <div class="mb-4 w-full text-left">
                 <label for="equipos_max" class="block text-sm font-medium mb-1">Máximo de Equipos</label>
                 <input type="number"
@@ -220,7 +236,7 @@
                        required>
             </div>
 
-            <!-- Botón para enviar el formulario de liga (todavía no conectado a backend) -->
+            <!-- Botón para enviar el formulario de liga -->
             <button type="submit"
                     class="w-2/3 bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-lg">
                 Crear Liga
@@ -239,6 +255,35 @@
     </div>
 </div>
 
+<!-- MODAL: VISITAR LIGA -->
+<div class="modal fade" id="modalVisitarLiga" tabindex="-1" aria-labelledby="modalVisitarLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-content-dark">
+            <div class="modal-header border-bottom border-gray-700">
+                <h5 class="modal-title fs-5" id="modalVisitarLabel">Visitar Liga</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <p class="mb-4 text-gray-300">Ingresa el código que te proporcionó el administrador para ver la tabla y resultados.</p>
+                
+                <input type="text" 
+                       id="input-codigo-liga" 
+                       class="w-full bg-white text-gray-900 px-4 py-3 rounded-lg text-center font-bold text-lg" 
+                       placeholder="Ej: LIGA-12345">
+            </div>
+            <div class="modal-footer border-top border-gray-700">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" id="btn-buscar-liga" class="btn btn-info fw-bold text-white">Ir a la Liga</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts de Bootstrap (Necesarios para el Modal) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
+        xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
+        crossorigin="anonymous"></script>
+
 <!-- Función para cambiar entre formularios -->
 <script>
     function toggleForms(hideId, showId) {
@@ -250,15 +295,11 @@
         // Si encontramos el formulario a ocultar, le agregamos la clase hidden
         if (formToHide) {
             formToHide.classList.add('hidden');
-        } else {
-            console.error(`Formulario a ocultar con ID '${hideId}' no encontrado.`);
         }
 
         // Si encontramos el formulario a mostrar, le quitamos la clase hidden
         if (formToShow) {
             formToShow.classList.remove('hidden');
-        } else {
-            console.error(`Formulario a mostrar con ID '${showId}' no encontrado.`);
         }
 
         // Si estamos ocultando el formulario de registro, escondemos también el mensaje de contraseñas distintas
@@ -271,7 +312,9 @@
     }
 </script>
 
-<!-- Cargamos el archivo de JavaScript que maneja login y registro -->
+<!-- Scripts Lógicos -->
 <script src="../js/login.js"></script>
+<script src="../js/home_liga.js"></script> <!-- Conexión para la búsqueda de liga -->
+
 </body>
 </html>

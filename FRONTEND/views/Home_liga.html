@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home de Liga</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-          rel="stylesheet">
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <title>General de Liga</title>
+    <!-- Mismas librerías que el resto del proyecto -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <style>
+        /* Mismos estilos base que home_liga.html */
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f8f9fac6;
@@ -18,11 +18,22 @@
         .header-bg {
             background-color: #760909;
         }
+        /* Estilos específicos para las tarjetas de estadísticas (sin romper layout) */
+        .card-stat {
+            transition: transform 0.2s;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .card-stat:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 
 <body>
 
+<!-- NAVBAR (Estructura idéntica al original) -->
 <nav class="navbar navbar-expand-lg navbar-dark header-bg shadow-sm">
     <div class="container-fluid">
         <a class="navbar-brand fw-bold fs-4" href="#">
@@ -35,93 +46,106 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <!-- Link a la vista general del equipo -->
                 <li class="nav-item">
-                    <a class="nav-link" href="General_view.html">General</a>
+                    <a class="nav-link active fw-bold" href="General_view.html">General</a>
                 </li>
-                <!-- Link a la tabla general de la liga -->
                 <li class="nav-item">
                     <a class="nav-link" href="Tabla_general.html">Tabla General</a>
                 </li>
-                <!-- Link a la tabla de goleadores -->
                 <li class="nav-item">
                     <a class="nav-link" href="Top_scorers.html">Tabla Goleadora</a>
                 </li>
             </ul>
             <div class="d-flex align-items-center">
-                <!-- Texto que indica que esta vista es pública, sin login -->
                 <span class="navbar-text text-white me-3">
-                        Público
-                    </span>
+                    Público
+                </span>
             </div>
         </div>
     </div>
 </nav>
 
-<!-- Contenedor principal del contenido de la página -->
+<!-- CONTENEDOR PRINCIPAL (Misma restricción de ancho max-width: 720px) -->
 <main class="container py-5" style="max-width: 720px;">
-    <!-- Título principal de la página -->
-    <h1 class="mb-3">
-        <i class="bi bi-search"></i> Busca tu liga
-    </h1>
-    <p class="text-muted">
-        Escribe el nombre o el código de la liga para ver su información pública.
-    </p>
+    
+    <!-- 1. TÍTULO DE LA LIGA -->
+    <div class="text-center mb-4">
+        <h1 class="mb-2 display-6 fw-bold" id="titulo-liga">
+            <span class="spinner-border spinner-border-sm" role="status"></span> Cargando...
+        </h1>
+        <p class="text-muted">Resumen general</p>
+    </div>
 
-    <!-- Formulario para buscar una liga-->
-    <form action="Tabla_general.html" method="get" class="row g-3">
-        <!-- Columna que ocupa todo el ancho para el input -->
-        <div class="col-12">
-            <!-- Etiqueta del campo de texto -->
-            <label class="form-label" for="liga">Nombre o código de liga</label>
-            <!-- Campo de texto donde se escribe el nombre o código -->
-            <input id="liga" name="liga" type="text" class="form-control"
-                   placeholder="Ej. Liga Intersemanal 2025" required>
+    <!-- 2. TARJETAS DE PARTIDOS (Próximo y Anterior) -->
+    <div class="row g-3 mb-5">
+        
+        <!-- Próximo Juego -->
+        <div class="col-md-6">
+            <div class="card h-100 card-stat" id="card-proximo">
+                <div class="card-header bg-white border-bottom-0 fw-bold text-primary">
+                    <i class="bi bi-calendar-event"></i> Próximo Juego
+                </div>
+                <div class="card-body text-center d-flex flex-column justify-content-center">
+                    <div class="spinner-border text-secondary m-auto" role="status"></div>
+                </div>
+            </div>
         </div>
-        <!-- Columna para el botón -->
-        <div class="col-12">
-            <!-- Botón que envía el formulario y navega a la tabla general -->
-            <button type="submit" class="btn btn-primary">
-                Entrar
-            </button>
-        </div>
-    </form>
 
-    <!-- Línea separadora para dividir secciones visualmente -->
+        <!-- Juego Anterior -->
+        <div class="col-md-6">
+            <div class="card h-100 card-stat" id="card-anterior">
+                <div class="card-header bg-white border-bottom-0 fw-bold text-secondary">
+                    <i class="bi bi-clock-history"></i> Juego Anterior
+                </div>
+                <div class="card-body text-center d-flex flex-column justify-content-center">
+                    <div class="spinner-border text-secondary m-auto" role="status"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Línea separadora (Igual que en home_liga) -->
     <hr class="my-5">
 
-    <!-- Subtítulo para la sección de ligas recientes -->
-    <h2 class="h5">Ligas recientes</h2>
-    <!-- Lista de ligas de ejemplo usando una lista de Bootstrap -->
-    <ul class="list-group">
-        <!-- Primer elemento de la lista, una liga de ejemplo -->
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            <!-- Nombre de la liga de ejemplo -->
-            Liga Intersemanal 2025
-            <!-- Botón pequeño para ir a ver la información de esa liga -->
-            <a class="btn btn-sm btn-outline-primary" href="Tabla_general.html">
-                Ver
-            </a>
-        </li>
-        <!-- Segundo elemento de la lista, otra liga de ejemplo -->
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            Torneo Sabatino Zona Centro
-            <a class="btn btn-sm btn-outline-primary" href="Tabla_general.html">
-                Ver
-            </a>
-        </li>
-    </ul>
+    <!-- 3. TOP GOLEADORES DE LA LIGA -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h5 mb-0">Top Goleadores de la Liga</h2>
+        <a href="Top_scorers.html" class="btn btn-sm btn-outline-success">Ver todos</a>
+    </div>
 
-    <!-- Sección extra con un botón para ir a la página de partidos -->
-    <div class="mt-4">
-        <!-- Botón que navega a la vista de partidos-->
+    <!-- Tabla simple dentro de una tarjeta -->
+    <div class="card card-stat">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">#</th>
+                        <th>Jugador</th>
+                        <th>Equipo</th>
+                        <th class="text-center pe-4">Goles</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-goleadores-home">
+                    <tr>
+                        <td colspan="4" class="text-center py-3 text-muted">Cargando datos...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Botón extra al final (Mantenido por consistencia de navegación) -->
+    <div class="mt-4 text-center">
         <a class="btn btn-outline-secondary btn-sm" href="Partidos.html">
-            Ver partidos
+            Ver todos los partidos
         </a>
     </div>
+
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
-</script>
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/general_view.js"></script>
+
 </body>
 </html>
