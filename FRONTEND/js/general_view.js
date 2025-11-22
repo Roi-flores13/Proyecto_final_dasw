@@ -1,6 +1,6 @@
 // frontend/js/general_view.js
 
-const API_URL = 'http://localhost:5000/api/mock';
+const API_URL = 'http://localhost:3000/api';
 
 document.addEventListener('DOMContentLoaded', async () => {
     // 1. Verificación de seguridad y contexto

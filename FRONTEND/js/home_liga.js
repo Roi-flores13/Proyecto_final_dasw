@@ -1,6 +1,6 @@
 // frontend/js/home_liga.js
 
-const API_URL = 'http://localhost:5000/api'; // Ajusta el puerto si es necesario
+const API_BASE_URL = 'http://localhost:3000/api'; // Ajusta el puerto si es necesario
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Referencias a los elementos del Modal
@@ -28,53 +28,38 @@ document.addEventListener('DOMContentLoaded', () => {
             searchBtn.disabled = true;
 
             try {
-                // ============================================================
-                // INICIO IMPLEMENTACIÓN TEMPORAL (BYPASS)
-                // ============================================================
+                console.log(`Buscando liga con código. ${codigo}...`)
                 
-                // Comentamos la llamada real al backend para pruebas
-                /*
-                // 3. Petición al Backend
-                // Consulta GET para validar si el código existe
-                const response = await fetch(`${API_URL}/league/code/${codigo}`);
+                // Hacemos fetch al endpoint que creamos en league_routes.js
+                // Ruta esperada: /api/leagues/code/{CODIGO}
+                const response = await fetch(`${API_BASE_URL}/league/code/${codigo}`);
                 
-                // Si el backend devuelve 404 u otro error, lanzamos excepción
+                const data = await response.json();
+
                 if (!response.ok) {
-                    throw new Error('Liga no encontrada');
+                    // Si es 404 u otro error, lanzamos el mensaje del backend
+                    throw new Error(data.message || 'Error al buscar la liga');
                 }
 
-                // 4. Procesar respuesta
-                const data = await response.json();
-                */
+                console.log("¡Liga encontrada en DB!", data);
 
-                // Simulación manual de datos para forzar la entrada
-                console.warn("MODO PRUEBA ACTIVADO: Saltando validación de backend");
+                // ------------------------------------------------------
+                // GUARDADO DE SESIÓN Y REDIRECCIÓN
+                // ------------------------------------------------------
                 
-                // Simulamos un pequeño tiempo de espera para realismo
-                await new Promise(r => setTimeout(r, 800));
+                // Guardamos el ID real de Mongo (_id) y datos básicos
+                localStorage.setItem('leagueId', data.id); 
+                localStorage.setItem('leagueCode', data.code);
+                localStorage.setItem('leagueName', data.name);
+                
+                // Limpiamos datos de usuario anteriores para evitar mezclas 
+                // (esto asegura que entres como Visitante limpio)
+                localStorage.removeItem('userRole');
+                localStorage.removeItem('teamName');
 
-                const data = {
-                    id: 'league_123_temporal',
-                    code: codigo,
-                    name: 'Liga Demo (Acceso Forzado)'
-                };
-
-                // ============================================================
-                // FIN IMPLEMENTACIÓN TEMPORAL
-                // ============================================================
-
-                console.log("Liga encontrada:", data);
-
-                // 5. Guardar datos en LocalStorage (Sesión de Visitante)
-                // Es importante guardar el ID para que las siguientes páginas sepan qué datos cargar
-                localStorage.setItem('leagueId', data.id || 'league_123'); 
-                localStorage.setItem('leagueCode', data.code || codigo);
-                localStorage.setItem('leagueName', data.name || 'Liga de Fútbol');
-
-                // 6. Redirección Exitosa
-                // Enviamos al usuario a la vista general ("Home" de la liga)
+                // Redirigir al Dashboard General
                 window.location.href = 'Home_liga.html';
-                
+
             } catch (error) {
                 console.error(error);
                 alert("Error: No se encontró una liga con ese código. Intenta nuevamente.");
