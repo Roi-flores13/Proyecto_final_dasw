@@ -1,83 +1,76 @@
-const mongoose = require('mongoose');
+// Importamos mongoose para definir el esquema de los partidos
+const mongoose = require("mongoose"); // Cargamos mongoose
 
-// Sub-esquema para los goleadores (para tenerlo organizado dentro del partido)
-const scorerSchema = new mongoose.Schema({
-    player: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Player', // Referencia al modelo de Jugador
-        required: true
+// Creamos el esquema de Match (partido)
+const matchSchema = new mongoose.Schema(
+    {
+        league: { // Liga a la que pertenece el partido
+            type: mongoose.Schema.Types.ObjectId, // Guardamos un ObjectId
+            ref: "League",                        // Referencia al modelo League
+            required: true                        // Obligatorio
+        },
+        gameweek: { // Jornada del partido
+            type: Number,             // Guardamos un número
+            required: true            // Obligatorio
+        },
+        date: { // Fecha del partido
+            type: Date,               // Guardamos una fecha
+            required: false,          // No la hacemos obligatoria por ahora
+            default: null             // La dejamos en null si no se manda
+        },
+        venue: { // Estadio o lugar del partido
+            type: String,             // Guardamos texto
+            default: "Por definir"    // Texto por defecto si no se manda nada
+        },
+        status: { // Estado del partido
+            type: String,                             // Guardamos texto
+            enum: ["pending", "jugado"],              // Permitimos estos valores
+            default: "pending"                        // Valor por defecto
+        },
+        home_team: { // Equipo local
+            type: mongoose.Schema.Types.ObjectId, // ObjectId del equipo
+            ref: "Team",                          // Referencia al modelo Team
+            required: true                        // Obligatorio
+        },
+        away_team: { // Equipo visitante
+            type: mongoose.Schema.Types.ObjectId, // ObjectId del equipo
+            ref: "Team",                          // Referencia al modelo Team
+            required: true                        // Obligatorio
+        },
+        home_score: { // Goles del local
+            type: Number,             // Número de goles
+            default: 0                // Empezamos en 0
+        },
+        away_score: { // Goles del visitante
+            type: Number,             // Número de goles
+            default: 0                // Empezamos en 0
+        },
+        scorers: [ // Lista de goleadores del partido
+            {
+                player: { // Jugador que anotó
+                    type: mongoose.Schema.Types.ObjectId, // ObjectId del jugador
+                    ref: "Player"                         // Referencia al modelo Player
+                },
+                team: { // Equipo del jugador
+                    type: mongoose.Schema.Types.ObjectId, // ObjectId del equipo
+                    ref: "Team"                           // Referencia al modelo Team
+                },
+                minute: { // Minuto del gol
+                    type: Number                          // Guardamos un número
+                }
+            }
+        ]
     },
-    team: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Team',   // Referencia al equipo (para saber a favor de quién fue el gol)
-        required: true
-    },
-    count: {
-        type: Number,  // Cuántos goles metió este jugador en este partido
-        default: 1,
-        min: 1
+    {
+        timestamps: true // Guardamos createdAt y updatedAt automáticamente
     }
-}, { _id: false }); // No necesitamos un ID único para este sub-objeto
+);
 
-const matchSchema = new mongoose.Schema({
-    league: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'League',
-        required: true
-    },
-    // Jornada (Importante para Round Robin: Jornada 1, Jornada 2, etc.)
-    gameweek: {
-        type: Number,
-        required: true
-    },
-    date: {
-        type: Date,
-        required: true
-    },
-    venue: { // Sede / Estadio
-        type: String,
-        default: 'Campo Principal'
-    },
-    status: {
-        type: String,
-        enum: ['scheduled', 'finished', 'postponed'], // scheduled: por jugar, finished: ya se jugó
-        default: 'scheduled'
-    },
-    
-    // Equipos
-    home_team: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Team',
-        required: true
-    },
-    away_team: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Team',
-        required: true
-    },
+// Creamos un índice para poder ordenar/buscar por liga y jornada
+matchSchema.index({ league: 1, gameweek: 1 }); // Creamos el índice
 
-    // Resultados (Marcador)
-    home_score: {
-        type: Number,
-        default: 0
-    },
-    away_score: {
-        type: Number,
-        default: 0
-    },
+// Creamos el modelo Match usando el esquema
+const Match = mongoose.model("Match", matchSchema); // Registramos el modelo en mongoose
 
-    // Lista de anotadores (Array con el sub-esquema definido arriba)
-    scorers: [{
-        player: { type: mongoose.Schema.Types.ObjectId, ref: 'Player' },
-        team:   { type: mongoose.Schema.Types.ObjectId, ref: 'Team' },
-        minute: { type: Number }
-    }]
-
-}, {
-    timestamps: true // Para saber cuándo se creó o editó el partido
-});
-
-// Índice para asegurar que búsquedas por liga y jornada sean rápidas
-matchSchema.index({ league: 1, gameweek: 1 });
-
-module.exports = mongoose.model('Match', matchSchema);
+// Exportamos el modelo para que se pueda usar en el resto del proyecto
+module.exports = Match; // Dejamos disponible Match para los controladores
