@@ -20,10 +20,14 @@ document.addEventListener("DOMContentLoaded", () => {
             // Obtenemos la contraseña que escribió el usuario
             const password = document.getElementById("password").value;
 
+            // Obtener codigo de liga
+            const codigoLiga = document.getElementById("liga_login").value;
+
             // Armamos el objeto que mandaremos al backend
             const datos = {
                 email: email,        // Guardamos el correo
-                password: password   // Guardamos la contraseña
+                password: password,   // Guardamos la contraseña
+                codigo_liga: codigoLiga // Guardamos el codigo de liga
             };
 
             try {
@@ -51,17 +55,21 @@ document.addEventListener("DOMContentLoaded", () => {
                 mensaje.textContent = "Login exitoso. Redirigiendo...";
                 mensaje.className = "alert alert-success mt-3";
 
-                // Obtenemos el rol del usuario que regresó el backend
+                // Obtenemos infromazcion del servidor
                 const rol = resultado.usuario.rol;
+                const redirectURL = resultado.usuario.redirectURL;
+                const leagueId = resultado.usuario.leagueId; // ID de la Liga
 
-                // Revisamos el rol del usuario para decidir a dónde enviarlo
-                if (rol === "superadmin") {
-                    // Enviamos al panel de administración
-                    window.location.href = "Admin_liga.html";
-                } else {
-                    // Enviamos a la vista general del equipo
-                    window.location.href = "General_view.html";
+                // Guardamos en localstorage
+                localStorage.setItem("userRole", rol);
+                localStorage.setItem("userId", resultado.usuario.id);
+
+                if (leagueId) {
+                    localStorage.setItem("leagueId", leagueId); 
                 }
+                
+                // Usamos la URL de redireccion condicional
+                window.location.href = redirectURL;
 
             } catch (error) {
                 // Si algo falla (internet, servidor apagado, etc.), manejamos el error

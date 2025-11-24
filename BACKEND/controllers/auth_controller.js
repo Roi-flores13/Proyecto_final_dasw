@@ -1,5 +1,7 @@
-// Importamos el modelo de usuario para poder crear y buscar usuarios
+// Importamos modelos para usarlos
 const User = require("../models/user_model");
+const Team = require("../models/team_model");
+const League = require("../models/league_model");
 
 // Importamos bcryptjs para poder encriptar y comparar contraseñas
 const bcrypt = require("bcryptjs");
@@ -59,7 +61,7 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
     try {
         // Obtenemos el correo y la contraseña del cuerpo de la petición
-        const { email, password } = req.body;
+        const { email, password, codigo_liga} = req.body;
 
         // Buscamos un usuario que tenga ese correo
         const user = await User.findOne({ email });
@@ -79,6 +81,38 @@ const loginUser = async (req, res) => {
             return res.status(400).json({ mensaje: "Credenciales inválidas" });
         }
 
+        let redirectPage = "General_view.html"; // Por defecto para visitantes o si tiene equipo
+        let currentLeagueId = null;
+        
+        // El Super Admin siempre va a su panel, no necesita código de liga para esta lógica.
+        if (user.rol === "superadmin") {
+            redirectPage = "Admin_liga.html";
+        }
+        
+        if (user.rol === "capitan") {
+            // 1. Verificamos que haya código de liga
+            if (!codigo_liga) {
+                return res.status(400).json({ mensaje: "Debe ingresar un Código de Liga" });
+            }
+
+            // 2. Buscamos la Liga por el código
+            const league = await League.findOne({ league_code: codigo_liga });
+
+            if (!league) {
+                return res.status(404).json({ mensaje: "Código de Liga inválido o no existe" });
+            }
+
+            currentLeagueId = league._id; // Guardamos el ID de la liga
+
+            // Buscamos si el capitán ya tiene un equipo en esa liga
+            const team = await Team.findOne({ captain: user._id, league: currentLeagueId });
+
+            if (!team) {
+                // Si NO tiene equipo, lo enviamos a la página de crear equipo
+                redirectPage = "Add_team.html";
+            }
+        }
+
         // Si todo está bien, respondemos con los datos básicos del usuario
         return res.status(200).json({
             mensaje: "Login correcto",
@@ -86,7 +120,9 @@ const loginUser = async (req, res) => {
                 id: user._id,        // Mandamos el id del usuario
                 nombre: user.nombre, // Mandamos el nombre del usuario
                 email: user.email,   // Mandamos el correo del usuario
-                rol: user.rol        // Mandamos el rol del usuario
+                rol: user.rol,       // Mandamos el rol del usuario
+                redirectURL: redirectPage,   // URL para el frontend
+                leagueId: currentLeagueId // ID de la liga para guardar en localStorage
             }
         });
     } catch (error) {
