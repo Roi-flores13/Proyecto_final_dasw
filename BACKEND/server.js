@@ -17,7 +17,13 @@ const authRoutes = require("./routes/auth_routes");
 const leagueRoutes = require("./routes/league_routes");
 
 // Importamos ruta de partidos
-const matchRoutes = require("./routes/match_routes")
+const matchRoutes = require("./routes/match_routes");
+
+// Importamos ruta de equipos
+const teamRoutes = require("./routes/team_routes");
+
+// Importamos ruta de jugadores
+const playerRoutes = require("./routes/player_routes");
 
 // Creamos la aplicación de express
 const app = express();
@@ -40,7 +46,9 @@ app.get("/", (req, res) => {
 // Montamos las rutas de autenticación bajo el prefijo /api/auth
 app.use("/api/auth", authRoutes);
 app.use("/api/league", leagueRoutes);
-app.use("/api/match", matchRoutes)
+app.use("/api/match", matchRoutes);
+app.use("/api/team", teamRoutes);
+app.use("/api/player", playerRoutes);
 
 // Hacemos que el servidor escuche el puerto definido en el archivo .env
 app.listen(process.env.PORT, () => {
