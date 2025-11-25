@@ -63,6 +63,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 // Éxito y Redirección
                 mensaje.textContent = "¡Equipo creado con éxito!";
+                localStorage.setItem("teamId", result.team.id); // Guardar el ID del equipo creado
+
                 setTimeout(() => {
                     window.location.href = "General_view.html"; 
                 }, 1500);

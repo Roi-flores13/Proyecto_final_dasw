@@ -83,6 +83,7 @@ const loginUser = async (req, res) => {
 
         let redirectPage = "General_view.html"; // Por defecto para visitantes o si tiene equipo
         let currentLeagueId = null;
+        let currentTeamId = null;
         
         // El Super Admin siempre va a su panel, no necesita código de liga para esta lógica.
         if (user.rol === "superadmin") {
@@ -90,12 +91,12 @@ const loginUser = async (req, res) => {
         }
         
         if (user.rol === "capitan") {
-            // 1. Verificamos que haya código de liga
+            // Verificamos que haya código de liga
             if (!codigo_liga) {
                 return res.status(400).json({ mensaje: "Debe ingresar un Código de Liga" });
             }
 
-            // 2. Buscamos la Liga por el código
+            // Buscamos la Liga por el código
             const league = await League.findOne({ league_code: codigo_liga });
 
             if (!league) {
@@ -108,8 +109,11 @@ const loginUser = async (req, res) => {
             const team = await Team.findOne({ captain: user._id, league: currentLeagueId });
 
             if (!team) {
-                // Si NO tiene equipo, lo enviamos a la página de crear equipo
+                // Si no tiene equipo, lo enviamos a la página de crear equipo
                 redirectPage = "Add_team.html";
+            } else {
+                // Si tiene equipo, guardamos su ID 
+                currentTeamId = team._id; 
             }
         }
 
@@ -122,7 +126,8 @@ const loginUser = async (req, res) => {
                 email: user.email,   // Mandamos el correo del usuario
                 rol: user.rol,       // Mandamos el rol del usuario
                 redirectURL: redirectPage,   // URL para el frontend
-                leagueId: currentLeagueId // ID de la liga para guardar en localStorage
+                leagueId: currentLeagueId, // ID de la liga para guardar en localStorage
+                teamId: currentTeamId // ID del equipo para guardar en localStorage
             }
         });
     } catch (error) {
