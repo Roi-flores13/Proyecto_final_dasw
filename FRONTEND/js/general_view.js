@@ -66,7 +66,9 @@ async function loadMatchesData(leagueId, role, teamName) {
         const response = await fetch(`${API_URL}/match/league/${leagueId}`);
         if (!response.ok) throw new Error('Error al obtener partidos');
 
-        const matches = await response.json();
+        const data = await response.json();
+        const matches = data.matches || [];
+        
         processMatches(matches, role, teamName);
 
     } catch (error) {
@@ -175,7 +177,8 @@ async function loadTopScorersData(leagueId, role, teamName) {
         const response = await fetch(`${API_URL}/league/${leagueId}/scorers`);
         if (!response.ok) throw new Error('Error al obtener goleadores');
 
-        const scorers = await response.json();
+        const data = await response.json();
+        const scorers = data.scorers || [];
         renderScorersTable(scorers, role, teamName);
 
     } catch (error) {

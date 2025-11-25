@@ -53,5 +53,5 @@ app.use("/api/player", playerRoutes);
 // Hacemos que el servidor escuche el puerto definido en el archivo .env
 app.listen(process.env.PORT, () => {
     // Mostramos un mensaje indicando que el servidor está corriendo
-    console.log(`✔ Servidor corriendo en el puerto ${process.env.PORT}`);
+    console.log(`✔ Servidor corriendo en http://localhost:${process.env.PORT}`);
 });

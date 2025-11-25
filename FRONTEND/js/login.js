@@ -20,10 +20,14 @@ document.addEventListener("DOMContentLoaded", () => {
             // Obtenemos la contraseña que escribió el usuario
             const password = document.getElementById("password").value;
 
+            // Obtener codigo de liga
+            const codigoLiga = document.getElementById("liga_login").value;
+
             // Armamos el objeto que mandaremos al backend
             const datos = {
                 email: email,        // Guardamos el correo
-                password: password   // Guardamos la contraseña
+                password: password,   // Guardamos la contraseña
+                codigo_liga: codigoLiga // Guardamos el codigo de liga
             };
 
             try {
@@ -51,17 +55,29 @@ document.addEventListener("DOMContentLoaded", () => {
                 mensaje.textContent = "Login exitoso. Redirigiendo...";
                 mensaje.className = "alert alert-success mt-3";
 
-                // Obtenemos el rol del usuario que regresó el backend
+                // Obtenemos informacion del servidor
                 const rol = resultado.usuario.rol;
+                const redirectURL = resultado.usuario.redirectURL;
+                const leagueId = resultado.usuario.leagueId; // ID de la Liga
+                const teamId = resultado.usuario.teamId;   // ID del Equipo
 
-                // Revisamos el rol del usuario para decidir a dónde enviarlo
-                if (rol === "superadmin") {
-                    // Enviamos al panel de administración
-                    window.location.href = "Admin_liga.html";
+                // Guardamos en localstorage
+                localStorage.setItem("userRole", rol);
+                localStorage.setItem("userId", resultado.usuario.id);
+
+                if (leagueId) {
+                    localStorage.setItem("leagueId", leagueId); 
                 } else {
-                    // Enviamos a la vista general del equipo
-                    window.location.href = "General_view.html";
+                    localStorage.removeItem("leagueId"); 
                 }
+
+                if (teamId) {
+                    localStorage.setItem("teamId", teamId); 
+                } else {
+                    localStorage.removeItem("teamId"); 
+                }
+                // Usamos la URL de redireccion condicional
+                window.location.href = redirectURL;
 
             } catch (error) {
                 // Si algo falla (internet, servidor apagado, etc.), manejamos el error
@@ -138,8 +154,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 // Si el servidor respondió con error, mostramos el mensaje
                 if (!respuesta.ok) {
-                    mensaje.textContent = resultado.mensaje || "No se pudo registrar el usuario";
-                    mensaje.className = "alert alert-danger mt-3";
+                    mensajeRegistro.textContent = resultado.mensaje || "No se pudo registrar el usuario";
+                    mensajeRegistro.className = "alert alert-danger mt-3";
                     return;
                 }
 
