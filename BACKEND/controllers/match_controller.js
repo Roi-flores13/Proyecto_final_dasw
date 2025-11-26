@@ -4,50 +4,42 @@ const Match = require("../models/match_model"); // Cargamos el esquema de partid
 // Importamos el modelo de Team para poder leer los equipos de una liga
 const Team = require("../models/team_model");   // Cargamos el esquema de equipos
 
+// Importamos el modelo de jugador
+const Player = require("../models/player_model");
+
 // Controlador para obtener todos los partidos de una liga
 const getMatchesByLeague = async (req, res) => { // Definimos la función para el GET por liga
     try {
-        // Sacamos el id de la liga que viene en la URL
-        const leagueId = req.params.leagueId; // Leemos el parámetro leagueId
+        const leagueId = req.params.leagueId;
+        const matches = await Match.find({ league: leagueId })
+            .populate("home_team away_team")
+            .sort({ date: 1 });
 
-        // Buscamos todos los partidos que pertenezcan a esa liga
-        const matches = await Match.find({ league: leagueId }) // Consultamos Mongo por liga
-            .populate("home_team away_team")                    // Cargamos info básica de los equipos
-            .sort({ date: 1 });                                 // Ordenamos por fecha ascendente
+        const matchesFormatted = matches.map((match) => {
+            const scoreText = (match.status === 'jugado') 
+                ? `${match.home_score} - ${match.away_score}` 
+                : "vs";
 
-        // Mapeamos los partidos a un formato más sencillo para el frontend
-        const matchesFormatted = matches.map((match) => { // Recorremos cada partido
-            // Armamos un marcador en texto simple
-            const scoreText = `${match.home_score} - ${match.away_score}`; // Construimos el marcador
+            const matchDate = match.date ? match.date.toISOString().split("T")[0] : null;
+            const matchTime = match.date ? match.date.toISOString().split("T")[1].slice(0, 5) : null;
 
-            // Sacamos la fecha y hora en formato sencillo
-            const matchDate = match.date ? match.date.toISOString().split("T")[0] : null; // Fecha YYYY-MM-DD
-            const matchTime = match.date ? match.date.toISOString().split("T")[1].slice(0, 5) : null; // Hora HH:MM
-
-            return {                     // Regresamos un objeto con los campos que el frontend necesita
-                id: match._id,           // Id del partido
-                gameweek: match.gameweek, // Jornada
-                home: match.home_team ? match.home_team.name : "Pendiente", // Nombre equipo local
-                away: match.away_team ? match.away_team.name : "Pendiente", // Nombre equipo visitante
-                date: matchDate,         // Fecha del partido
-                time: matchTime,         // Hora del partido
-                stadium: match.venue || "Por definir", // Estadio o texto por defecto
-                score: scoreText,        // Marcador en texto
-                status: match.status     // Estado del partido (pendiente / jugado)
+            return {
+                id: match._id,
+                gameweek: match.gameweek,
+                home: match.home_team ? match.home_team.name : "Pendiente",
+                away: match.away_team ? match.away_team.name : "Pendiente",
+                date: matchDate,
+                time: matchTime,
+                stadium: match.venue || "Por definir",
+                score: scoreText,
+                status: match.status
             };
         });
 
-        // Mandamos la respuesta al frontend
-        return res.status(200).json({
-            leagueId: leagueId,        // Regresamos el id de la liga
-            matches: matchesFormatted  // Regresamos el arreglo de partidos formateados
-        });
-
+        return res.status(200).json({ leagueId, matches: matchesFormatted });
     } catch (error) {
-        console.error("Error al obtener partidos de la liga:", error); // Mostramos el error
-        return res.status(500).json({
-            mensaje: "Error al obtener partidos de la liga" // Mensaje de error genérico
-        });
+        console.error("Error al obtener partidos:", error);
+        return res.status(500).json({ mensaje: "Error interno" });
     }
 };
 
@@ -58,14 +50,12 @@ const getMatchById = async (req, res) => { // Definimos la función para el GET 
         const matchId = req.params.matchId; // Leemos el parámetro matchId
 
         // Buscamos el partido en la base de datos
-        const match = await Match.findById(matchId) // Consultamos Mongo por id
-            .populate("home_team away_team");       // Cargamos info básica de los equipos
+        const match = await Match.findById(matchId) 
+            .populate("home_team away_team")       // Trae datos de equipos
+            .populate("scorers.player", "name");   // Trae SOLO el nombre del jugador que anotó
 
-        // Si no encontramos el partido, regresamos 404
-        if (!match) { // Revisamos si no hubo resultado
-            return res.status(404).json({
-                mensaje: "Partido no encontrado" // Mensaje si no existe
-            });
+        if (!match) { 
+            return res.status(404).json({ mensaje: "Partido no encontrado" });
         }
 
         // Armamos un objeto con la info que queremos mandar al frontend
@@ -159,44 +149,90 @@ const generateFixtures = async (req, res) => { // Definimos la función para gen
     }
 };
 
-// Controlador para actualizar el resultado de un partido
-const updateMatchResult = async (req, res) => { // Definimos la función para actualizar marcador
+const updateMatchResult = async (req, res) => {
     try {
-        // Sacamos el id del partido que viene en la URL
-        const matchId = req.params.matchId; // Leemos el parámetro matchId
+        const matchId = req.params.matchId;
+        const { home_score, away_score, status, scorers } = req.body; 
+        // scorers espera ser un array: [{ playerId: "xyz", teamId: "abc" }, ...]
 
-        // Sacamos del body los datos que queremos actualizar
-        const { home_score, away_score, status } = req.body; // Leemos los campos enviados
+        // 1. Validar que el partido exista
+        const match = await Match.findById(matchId);
+        if (!match) return res.status(404).json({ mensaje: "Partido no encontrado" });
 
-        // Buscamos y actualizamos el partido en la base de datos
-        const updatedMatch = await Match.findByIdAndUpdate( // Usamos findByIdAndUpdate
-            matchId,                                        // Id del partido
-            {                                               // Campos a actualizar
-                home_score: home_score,                     // Actualizamos goles locales
-                away_score: away_score,                     // Actualizamos goles visitantes
-                status: status                              // Actualizamos el estado (ej. "jugado")
-            },
-            { new: true }                                   // Indicamos que queremos el documento actualizado
-        ).populate("home_team away_team");                  // Cargamos info básica de equipos
+        // IMPORTANTE: Para este ejemplo simple, asumimos que solo se actualiza una vez.
+        // Si el partido ya estaba "jugado", deberíamos restar los puntos anteriores antes de sumar los nuevos.
+        // Por ahora, procederemos a actualizar directamente.
 
-        // Si no encontramos el partido, regresamos 404
-        if (!updatedMatch) { // Revisamos si no hubo resultado
-            return res.status(404).json({
-                mensaje: "Partido no encontrado" // Mensaje si no existe
-            });
+        // 2. Determinar Puntos
+        let homePoints = 0;
+        let awayPoints = 0;
+        let homeWon = 0, homeDrawn = 0, homeLost = 0;
+        let awayWon = 0, awayDrawn = 0, awayLost = 0;
+
+        const hScore = parseInt(home_score);
+        const aScore = parseInt(away_score);
+
+        if (hScore > aScore) {
+            homePoints = 3; homeWon = 1; awayLost = 1;
+        } else if (hScore < aScore) {
+            awayPoints = 3; awayWon = 1; homeLost = 1;
+        } else {
+            homePoints = 1; awayPoints = 1;
+            homeDrawn = 1; awayDrawn = 1;
         }
 
-        // Regresamos el partido ya actualizado
-        return res.status(200).json({
-            mensaje: "Resultado actualizado correctamente", // Mensaje de éxito
-            match: updatedMatch                             // Mandamos el partido modificado
+        // 3. Actualizar ESTADÍSTICAS DEL EQUIPO LOCAL
+        await Team.findByIdAndUpdate(match.home_team, {
+            $inc: { // $inc incrementa el valor actual
+                "stats.played": 1,
+                "stats.won": homeWon,
+                "stats.drawn": homeDrawn,
+                "stats.lost": homeLost,
+                "stats.gf": hScore,
+                "stats.ga": aScore,
+                "stats.points": homePoints
+            }
+        });
+
+        // 4. Actualizar ESTADÍSTICAS DEL EQUIPO VISITANTE
+        await Team.findByIdAndUpdate(match.away_team, {
+            $inc: {
+                "stats.played": 1,
+                "stats.won": awayWon,
+                "stats.drawn": awayDrawn,
+                "stats.lost": awayLost,
+                "stats.gf": aScore,
+                "stats.ga": hScore,
+                "stats.points": awayPoints
+            }
+        });
+
+        // 5. Actualizar GOLEADORES (Si vienen en el body)
+        if (scorers && scorers.length > 0) {
+            for (const scorer of scorers) {
+                // Buscamos al jugador y le sumamos 1 gol
+                await Player.findByIdAndUpdate(scorer.player, {
+                    $inc: { total_goals: 1 }
+                });
+            }
+        }
+
+        // 6. Finalmente, guardar el resultado en el PARTIDO
+        match.home_score = hScore;
+        match.away_score = aScore;
+        match.status = status || "jugado";
+        match.scorers = scorers || []; // Guardamos el historial de quién metió gol en este partido
+        
+        await match.save();
+
+        return res.status(200).json({ 
+            mensaje: "Resultado y estadísticas actualizadas correctamente", 
+            match 
         });
 
     } catch (error) {
-        console.error("Error al actualizar resultado del partido:", error); // Mostramos el error
-        return res.status(500).json({
-            mensaje: "Error al actualizar resultado" // Mensaje de error genérico
-        });
+        console.error("Error al actualizar resultado:", error);
+        return res.status(500).json({ mensaje: "Error al actualizar resultado" });
     }
 };
 
