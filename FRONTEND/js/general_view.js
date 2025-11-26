@@ -3,64 +3,60 @@
 const API_URL = 'http://localhost:3000/api';
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // 1. Verificación de seguridad y contexto
     const leagueId = localStorage.getItem('leagueId');
-    const leagueNameStored = localStorage.getItem('leagueName');
-    
-    // DATOS DE SESIÓN (Simulados o reales del Login)
-    const userRole = localStorage.getItem('userRole') || 'visitor'; // 'captain', 'admin', 'visitor'
-    // Si es capitán, asumimos que su equipo es "Los Rayos" para la demo si no hay dato guardado
-    const myTeamName = localStorage.getItem('teamName') || 'Los Rayos'; 
+    const userRole = localStorage.getItem('userRole') || 'visitor'; 
+    const myTeamName = localStorage.getItem('teamName') || 'Mi Equipo'; // Nombre provisional si no hay dato
 
     if (!leagueId) {
-        alert("No se ha seleccionado una liga.");
         window.location.href = 'Login.html';
         return;
     }
 
-    // 2. Configurar Textos según el Rol
-    const titleEl = document.getElementById('titulo-liga');
-    const subTitleEl = document.querySelector('.text-muted'); // El párrafo debajo del título
-
-    if (userRole === 'captain') {
-        // VISTA DE CAPITÁN
-        if (titleEl) titleEl.textContent = `Panel de Equipo: ${myTeamName}`;
-        if (subTitleEl) subTitleEl.textContent = `Resumen de tu equipo en la liga ${leagueNameStored || ''}`;
-        
-        // Cambiar títulos de las tarjetas para dar contexto
-        updateCardTitle('card-proximo', 'Tu Próximo Juego');
-        updateCardTitle('card-anterior', 'Tu Juego Anterior');
-        
-        // Cambiar título de goleadores
-        const scorersTitle = document.querySelector('h2.h5');
-        if (scorersTitle) scorersTitle.textContent = `Goleadores de ${myTeamName}`;
-
-    } else {
-        // VISTA DE VISITANTE / GENERAL
-        if (titleEl) titleEl.textContent = leagueNameStored ? `Liga: ${leagueNameStored}` : "Liga de Fútbol";
-        if (subTitleEl) subTitleEl.textContent = "Resumen general y estadísticas destacadas";
+    // 1. INTENTAR RECUPERAR NOMBRE DE LIGA
+    let leagueNameStored = localStorage.getItem('leagueName');
+    
+    // Si no tenemos el nombre, lo pedimos al backend
+    if (!leagueNameStored || leagueNameStored === "undefined") {
+        try {
+            const resp = await fetch(`${API_URL}/league/find/${leagueId}`);
+            if (resp.ok) {
+                const data = await resp.json();
+                leagueNameStored = data.nombre;
+                localStorage.setItem('leagueName', data.nombre); // Lo guardamos para la proxima
+            }
+        } catch (e) {
+            console.error("No se pudo obtener nombre de liga");
+        }
     }
 
-    // 3. Iniciar carga de datos (Pasamos el rol y el equipo para filtrar)
+    // 2. CONFIGURAR TEXTOS DE LA UI
+    const titleEl = document.getElementById('titulo-liga');
+    const subTitleEl = document.querySelector('.text-muted');
+
+    if (userRole === 'captain') {
+        if (titleEl) titleEl.textContent = `Panel de Equipo`; // Puedes poner myTeamName si lo guardamos en login
+        if (subTitleEl) subTitleEl.textContent = `Estadísticas en ${leagueNameStored || 'la liga'}`;
+        updateCardTitle('card-proximo', 'Tu Próximo Juego');
+        updateCardTitle('card-anterior', 'Tu Juego Anterior');
+    } else {
+        if (titleEl) titleEl.textContent = leagueNameStored || "Liga de Fútbol";
+    }
+
+    // 3. CARGAR DATOS
     await Promise.all([
         loadMatchesData(leagueId, userRole, myTeamName),
         loadTopScorersData(leagueId, userRole, myTeamName)
     ]);
 });
 
-// Helper para cambiar texto de cabecera de tarjeta
 function updateCardTitle(cardId, newTitle) {
     const header = document.querySelector(`#${cardId} .card-header`);
     if (header) {
-        // Mantenemos el icono, solo cambiamos el texto
         const iconHtml = header.querySelector('i') ? header.querySelector('i').outerHTML : '';
         header.innerHTML = `${iconHtml} ${newTitle}`;
     }
 }
 
-// ==========================================
-// LÓGICA DE PARTIDOS
-// ==========================================
 async function loadMatchesData(leagueId, role, teamName) {
     try {
         const response = await fetch(`${API_URL}/match/league/${leagueId}`);
@@ -68,47 +64,53 @@ async function loadMatchesData(leagueId, role, teamName) {
 
         const data = await response.json();
         const matches = data.matches || [];
-        
         processMatches(matches, role, teamName);
 
     } catch (error) {
         console.error("Error cargando partidos:", error);
-        renderErrorInCard('card-proximo', 'No se pudieron cargar los datos.');
-        renderErrorInCard('card-anterior', 'No se pudieron cargar los datos.');
+        renderErrorInCard('card-proximo', 'No se pudieron cargar datos.');
     }
 }
 
 function processMatches(matches, role, teamName) {
     let filteredMatches = matches;
 
-    // FILTRO: Si es capitán, solo mostramos partidos donde juegue su equipo
-    if (role === 'captain') {
-        filteredMatches = matches.filter(m => 
-            m.home === teamName || m.away === teamName
-        );
+    // Filtro para capitán (si tuviéramos el nombre correcto del equipo)
+    // Nota: Como 'teamName' puede no estar guardado en login.js, esto podría ocultar partidos.
+    // Para ver algo ahora mismo, comentamos el filtro estricto o asegurate de que teamName coincida.
+    if (role === 'captain' && teamName !== 'Mi Equipo') {
+         filteredMatches = matches.filter(m => m.home === teamName || m.away === teamName);
     }
 
     const now = new Date();
 
-    // Convertimos fechas
-    const matchesWithDate = filteredMatches.map(match => {
-        const dateObj = new Date(`${match.date}T00:00:00`); 
-        return { ...match, dateObj };
+    // Separamos partidos con fecha válida de los que no tienen fecha
+    const validMatches = [];
+    const pendingDateMatches = [];
+
+    filteredMatches.forEach(match => {
+        if (match.date) {
+            // Creamos objeto fecha solo si existe
+            match.dateObj = new Date(`${match.date}T${match.time || '00:00'}:00`);
+            validMatches.push(match);
+        } else {
+            pendingDateMatches.push(match);
+        }
     });
 
-    // 1. Próximo Juego
-    const upcomingMatches = matchesWithDate
-        .filter(m => m.dateObj >= now)
-        .sort((a, b) => a.dateObj - b.dateObj);
+    // Ordenar los que tienen fecha
+    validMatches.sort((a, b) => a.dateObj - b.dateObj);
 
-    // 2. Juego Anterior
-    const pastMatches = matchesWithDate
-        .filter(m => m.dateObj < now)
-        .sort((a, b) => b.dateObj - a.dateObj);
+    // LÓGICA:
+    // Próximo juego: El primero que tenga fecha >= hoy. Si no hay, tomamos uno "Por definir".
+    const upcoming = validMatches.find(m => m.dateObj >= now) || pendingDateMatches[0];
+    
+    // Juego anterior: El último que tenga fecha < hoy.
+    // Filtramos los pasados y tomamos el último (reverse)
+    const past = validMatches.filter(m => m.dateObj < now).pop(); 
 
-    // Renderizar
-    renderNextMatch(upcomingMatches[0], role);
-    renderPrevMatch(pastMatches[0], role);
+    renderNextMatch(upcoming, role);
+    renderPrevMatch(past, role);
 }
 
 function renderNextMatch(match, role) {
@@ -116,20 +118,22 @@ function renderNextMatch(match, role) {
     if (!container) return;
 
     if (!match) {
-        const msg = role === 'captain' ? "Tu equipo no tiene partidos programados." : "No hay partidos programados en la liga.";
-        container.innerHTML = `<p class="text-muted my-3 small">${msg}</p>`;
+        container.innerHTML = `<p class="text-muted my-3 small">No hay partidos programados.</p>`;
         return;
     }
 
+    // Si no tiene fecha, mostramos "Por definir"
+    const dateText = match.date ? `${match.date} - ${match.time}` : "Fecha por definir";
+
     container.innerHTML = `
-        <h5 class="card-title text-muted mb-3" style="font-size: 0.9rem;">${match.date} - ${match.time}</h5>
+        <h5 class="card-title text-muted mb-3" style="font-size: 0.9rem;">${dateText}</h5>
         <div class="d-flex justify-content-between align-items-center w-100 mb-3 px-2">
             <div class="text-end w-40 fw-bold text-truncate">${match.home}</div>
             <div class="badge bg-primary rounded-pill px-3">VS</div>
             <div class="text-start w-40 fw-bold text-truncate">${match.away}</div>
         </div>
         <p class="card-text small text-muted mb-3">
-            <i class="bi bi-geo-alt-fill text-danger"></i> ${match.stadium || 'Cancha Principal'}
+            <i class="bi bi-geo-alt-fill text-danger"></i> ${match.stadium}
         </p>
         <button onclick="goToMatchDetail('${match.id}')" class="btn btn-primary btn-sm rounded-pill px-4">
             Ver detalles
@@ -142,18 +146,25 @@ function renderPrevMatch(match, role) {
     if (!container) return;
 
     if (!match) {
-        const msg = role === 'captain' ? "Tu equipo no ha jugado aún." : "No hay partidos jugados recientes.";
-        container.innerHTML = `<p class="text-muted my-3 small">${msg}</p>`;
+        container.innerHTML = `<p class="text-muted my-3 small">No hay resultados recientes.</p>`;
         return;
     }
 
-    const score = match.score || "Pendiente";
+    // CORRECCIÓN 1: Definir el texto del estado dinámicamente
+    // Si status es 'jugado', dice Finalizado. Si no, dice Pendiente (aunque la fecha ya haya pasado).
+    const statusText = match.status === 'jugado' ? "Finalizado" : "Pendiente por resultado";
+    
+    // CORRECCIÓN 2: Si el score es "vs" (porque no se ha jugado), lo mostramos en gris
+    const scoreColorClass = match.score.includes("-") ? "text-dark" : "text-muted";
 
     container.innerHTML = `
-        <h5 class="card-title text-muted mb-3" style="font-size: 0.9rem;">${match.date} - Finalizado</h5>
+        <h5 class="card-title text-muted mb-3" style="font-size: 0.9rem;">${match.date} - ${statusText}</h5>
+        
         <div class="d-flex justify-content-between align-items-center w-100 mb-3 px-2">
             <div class="text-end w-40 fw-bold text-secondary text-truncate">${match.home}</div>
-            <div class="fw-bold fs-5 px-2 text-nowrap">${score}</div>
+            
+            <div class="fw-bold fs-5 px-2 text-nowrap ${scoreColorClass}">${match.score}</div>
+            
             <div class="text-start w-40 fw-bold text-secondary text-truncate">${match.away}</div>
         </div>
         <button onclick="goToMatchDetail('${match.id}')" class="btn btn-outline-secondary btn-sm rounded-pill px-4">
@@ -164,63 +175,34 @@ function renderPrevMatch(match, role) {
 
 function renderErrorInCard(cardId, message) {
     const container = document.querySelector(`#${cardId} .card-body`);
-    if (container) {
-        container.innerHTML = `<div class="text-danger small py-3">${message}</div>`;
-    }
+    if (container) container.innerHTML = `<div class="text-danger small py-3">${message}</div>`;
 }
 
-// ==========================================
-// LÓGICA DE GOLEADORES
-// ==========================================
 async function loadTopScorersData(leagueId, role, teamName) {
     try {
         const response = await fetch(`${API_URL}/league/${leagueId}/scorers`);
-        if (!response.ok) throw new Error('Error al obtener goleadores');
-
+        if (!response.ok) throw new Error('Error');
         const data = await response.json();
-        const scorers = data.scorers || [];
-        renderScorersTable(scorers, role, teamName);
-
+        renderScorersTable(data.scorers, role, teamName);
     } catch (error) {
-        console.error("Error goleadores:", error);
         const tbody = document.getElementById('tabla-goleadores-home');
-        if (tbody) {
-            tbody.innerHTML = `<tr><td colspan="4" class="text-center text-danger py-3">No se pudo cargar la tabla.</td></tr>`;
-        }
+        if (tbody) tbody.innerHTML = `<tr><td colspan="4" class="text-center text-danger py-3">Error al cargar.</td></tr>`;
     }
 }
 
 function renderScorersTable(scorers, role, teamName) {
-    const tbody = document.getElementById('tabla-goleadores-home');
-    if (!tbody) return;
-
-    tbody.innerHTML = '';
-
-    let filteredScorers = scorers;
-
-    // FILTRO: Si es capitán, solo sus jugadores
-    if (role === 'captain') {
-        filteredScorers = scorers.filter(p => p.team === teamName);
-    }
-
-    if (!filteredScorers || filteredScorers.length === 0) {
-        const msg = role === 'captain' ? "Tu equipo aún no tiene goleadores." : "Sin registros aún.";
-        tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-3">${msg}</td></tr>`;
+     const tbody = document.getElementById('tabla-goleadores-home');
+     if (!tbody) return;
+     tbody.innerHTML = '';
+     
+     if (!scorers || scorers.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-3">Sin registros aún.</td></tr>`;
         return;
-    }
-
-    // Tomar top 5
-    const topScorers = filteredScorers.slice(0, 5);
-
-    topScorers.forEach((player, index) => {
+     }
+     
+     scorers.slice(0, 5).forEach((player, index) => {
+        const rankIcon = index === 0 ? '<i class="bi bi-trophy-fill text-warning"></i>' : `<span class="text-muted fw-bold small">${index + 1}</span>`;
         const tr = document.createElement('tr');
-        
-        // Icono: Si es liga general mostramos ranking numérico o copa. 
-        // Si es equipo, también enumeramos.
-        const rankIcon = index === 0 
-            ? '<i class="bi bi-trophy-fill text-warning"></i>' 
-            : `<span class="text-muted fw-bold small">${index + 1}</span>`;
-
         tr.innerHTML = `
             <td class="ps-4">${rankIcon}</td>
             <td class="fw-semibold text-dark">${player.name}</td>
@@ -228,12 +210,9 @@ function renderScorersTable(scorers, role, teamName) {
             <td class="text-center pe-4 fw-bold text-success">${player.goals}</td>
         `;
         tbody.appendChild(tr);
-    });
+     });
 }
 
-// ==========================================
-// UTILIDADES
-// ==========================================
 window.goToMatchDetail = (matchId) => {
     localStorage.setItem('matchId', matchId);
     window.location.href = 'Partido_detalle.html';
