@@ -17,5 +17,9 @@ router.get("/:leagueId/scorers", leagueController.getTopScorers); // Cuando lleg
 // Ruta para obtener la tabla general de una liga
 router.get("/:leagueId/standings", leagueController.getStandings); // Cuando llegue un GET a /api/league/:leagueId/standings usamos getStandings
 
+// Ruta para obtener la liga por su ID
+router.get("/find/:id", leagueController.getLeagueById) // Cuando llegue un GET a /api/league/find/:id usamos getLeagueById
+
+
 // Exportamos el router para que server.js pueda usar estas rutas
 module.exports = router; // Dejamos disponible el router para el resto del proyecto
