@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Guardamos el ID real de Mongo (_id) y datos básicos
                 localStorage.setItem('leagueId', data.id); 
                 localStorage.setItem('leagueCode', data.code);
-                localStorage.setItem('leagueName', data.name);
+                localStorage.setItem('leagueName', data.nombre);
                 
                 // Limpiamos datos de usuario anteriores para evitar mezclas 
                 // (esto asegura que entres como Visitante limpio)
