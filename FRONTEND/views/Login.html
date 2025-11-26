@@ -1,23 +1,17 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <!-- Definimos la codificación para soportar acentos -->
     <meta charset="UTF-8">
-    <!-- Hacemos que se adapte bien a pantallas pequeñas -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Título que se ve en la pestaña del navegador -->
     <title>Acceso y Registro de Liga</title>
 
-    <!-- Incluimos Bootstrap para estilos y componentes -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
           rel="stylesheet"
           xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
           crossorigin="anonymous">
 
-    <!-- Incluimos Tailwind para utilidades rápidas de diseño -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Estilos básicos de la página -->
     <style>
         body {
             font-family: 'Inter', sans-serif;          /* Usamos una fuente limpia */
@@ -33,20 +27,19 @@
             color: white;
             border: 1px solid #760909;
         }
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
 
-<!-- Contenedor principal de la tarjeta -->
 <div class="w-full max-w-md">
     <div class="bg-[#270202] text-white p-10 sm:p-15 rounded-xl">
 
-        <!-- FORMULARIO: INICIAR SESIÓN -->
         <form id="form-login" class="text-center">
-            <!-- Título del formulario -->
             <h3 class="text-3xl font-bold mb-6">Iniciar Sesión</h3>
 
-            <!-- Campo de correo electrónico -->
             <div class="mb-4 w-full text-left">
                 <label for="email" class="block text-sm font-medium mb-1">Correo electrónico</label>
                 <input type="email"
@@ -56,7 +49,6 @@
                        required>
             </div>
 
-            <!-- Campo de contraseña -->
             <div class="mb-4 w-full text-left">
                 <label for="password" class="block text-sm font-medium mb-1">Contraseña</label>
                 <input type="password"
@@ -67,7 +59,6 @@
                        minlength="8">
             </div>
 
-            <!-- Campo de código de liga (opcional en login directo, mantenido del original) -->
             <div class="mb-6 w-full text-left">
                 <label for="liga_login" class="block text-sm font-medium mb-1">Código de Liga</label>
                 <input type="text"
@@ -76,16 +67,13 @@
                        class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg">
             </div>
 
-            <!-- Botón para enviar el login -->
             <button type="submit"
                     class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg">
                 Ingresar
             </button>
 
-            <!-- Div donde mostraremos mensajes de error o éxito -->
             <div id="mensaje" class="mt-3"></div>
 
-            <!-- Botón para ir al formulario de registro -->
             <div class="mt-6 pt-4 border-t border-gray-200">
                 <p class="text-gray-200 mb-3">¿Eres nuevo por aquí?</p>
                 <button type="button"
@@ -95,7 +83,6 @@
                 </button>
             </div>
 
-            <!-- Botón para ir al formulario de crear liga -->
             <div class="mt-3">
                 <button type="button"
                         class="btn btn-outline-danger w-2/3 fw-bold py-3"
@@ -104,7 +91,6 @@
                 </button>
             </div>
 
-            <!-- VISITAR LIGA -->
             <div class="mt-3">
                 <button type="button"
                         class="btn btn-outline-info w-2/3 fw-bold py-3"
@@ -115,7 +101,6 @@
             </div>
         </form>
 
-        <!--  Admin o capitan -->
         <form id="form-register" class="text-center hidden">
             <h3 class="text-3xl font-bold mb-6">Registro</h3>
 
@@ -188,12 +173,20 @@
             </div>
         </form>
 
-        <!-- FORMULARIO: CREAR LIGA -->
         <form id="form-create-league" class="text-center hidden">
-            <!-- Título del formulario -->
             <h3 class="text-3xl font-bold mb-6">Crear Nueva Liga</h3>
-
-            <!-- Campo nombre de la liga -->
+            
+            <p class="text-xs text-center text-gray-400 mb-4">
+                Confirma tus credenciales de administrador para crear la liga.
+            </p>
+            <div class="mb-4 w-full text-left">
+                <label for="admin_email" class="block text-sm font-medium mb-1">Email</label>
+                <input type="email" id="admin_email" name="admin_email" class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required>
+            </div>
+            <div class="mb-4 w-full text-left">
+                <label for="admin_password" class="block text-sm font-medium mb-1">Contraseña</label>
+                <input type="password" id="admin_password" name="admin_password" class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required>
+            </div>
             <div class="mb-4 w-full text-left">
                 <label for="nombre_liga" class="block text-sm font-medium mb-1">Nombre de la Liga</label>
                 <input type="text"
@@ -203,7 +196,6 @@
                        required>
             </div>
 
-            <!-- Campo máximo de equipos -->
             <div class="mb-4 w-full text-left">
                 <label for="equipos_max" class="block text-sm font-medium mb-1">Máximo de Equipos</label>
                 <input type="number"
@@ -217,7 +209,6 @@
                 <div class="text-xs text-gray-300 mt-1 text-left">Mínimo 4, Máximo 16.</div>
             </div>
 
-            <!-- Campo código de liga -->
             <div class="mb-4 w-full text-left">
                 <label for="codigo_liga" class="block text-sm font-medium mb-1">
                     Código de Liga (Para compartir)
@@ -231,7 +222,6 @@
                        maxlength="10">
             </div>
 
-            <!-- Campo fecha de inicio -->
             <div class="mb-6 w-full text-left">
                 <label for="fecha_inicio" class="block text-sm font-medium mb-1">Fecha de Inicio Estimada</label>
                 <input type="date"
@@ -240,14 +230,14 @@
                        class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg"
                        required>
             </div>
+            
+            <div id="mensaje-crear-liga" class="mt-3"></div>
 
-            <!-- Botón para enviar el formulario de liga -->
             <button type="submit"
                     class="w-2/3 bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-lg">
                 Crear Liga
             </button>
 
-            <!-- Botón para volver al login -->
             <div class="mt-6 pt-4 border-t border-gray-200">
                 <button type="button"
                         class="w-2/3 bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 rounded-lg"
@@ -260,7 +250,6 @@
     </div>
 </div>
 
-<!-- MODAL: VISITAR LIGA -->
 <div class="modal fade" id="modalVisitarLiga" tabindex="-1" aria-labelledby="modalVisitarLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content modal-content-dark">
@@ -284,12 +273,10 @@
     </div>
 </div>
 
-<!-- Scripts de Bootstrap (Necesarios para el Modal) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
         xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
         crossorigin="anonymous"></script>
 
-<!-- Función para cambiar entre formularios -->
 <script>
     function toggleForms(hideId, showId) {
         // Obtenemos el formulario que vamos a ocultar
@@ -317,9 +304,6 @@
     }
 </script>
 
-<!-- Scripts Lógicos -->
 <script src="../js/login.js"></script>
-<script src="../js/home_liga.js"></script> <!-- Conexión para la búsqueda de liga -->
-
-</body>
+<script src="../js/home_liga.js"></script> </body>
 </html>

@@ -4,8 +4,15 @@ document.addEventListener("DOMContentLoaded", () => {
     // Obtenemos el formulario de login usando su id
     const formLogin = document.getElementById("form-login");
 
-    // Obtenemos el contenedor donde mostraremos mensajes de error o éxito
-    const mensaje = document.getElementById("mensaje");
+    // Obtenemos el contenedor donde mostraremos mensajes de error o éxito del LOGIN
+    const mensajeLogin = document.getElementById("mensaje"); // Asumo id="mensaje" es para el LOGIN
+
+    // Obtenemos el formulario de registro usando su id
+    const formRegister = document.getElementById("form-register");
+
+    // OBTENEMOS EL CONTENEDOR EXCLUSIVO PARA EL REGISTRO (Asumiendo id="mensaje-registro" en HTML)
+    const mensajeRegistro = document.getElementById("mensaje-registro"); 
+
 
     // Si encontramos el formulario de login, le agregamos el listener
     if (formLogin) {
@@ -14,84 +21,75 @@ document.addEventListener("DOMContentLoaded", () => {
             // Evitamos que el formulario recargue la página
             evento.preventDefault();
 
-            // Obtenemos el correo que escribió el usuario
+            // Obtenemos los valores de los inputs (Usando los IDs del HTML)
             const email = document.getElementById("email").value;
-
-            // Obtenemos la contraseña que escribió el usuario
             const password = document.getElementById("password").value;
-
-            // Obtener codigo de liga
             const codigoLiga = document.getElementById("liga_login").value;
 
             // Armamos el objeto que mandaremos al backend
             const datos = {
-                email: email,        // Guardamos el correo
-                password: password,   // Guardamos la contraseña
-                codigo_liga: codigoLiga // Guardamos el codigo de liga
+                email: email,       
+                password: password,   
+                codigo_liga: codigoLiga
             };
 
             try {
                 // Mandamos la petición al backend usando fetch
                 const respuesta = await fetch("http://localhost:3000/api/auth/login", {
-                    method: "POST",                                   // Indicamos que es POST
-                    headers: { "Content-Type": "application/json" },  // Indicamos que mandamos JSON
-                    body: JSON.stringify(datos)                       // Convertimos los datos a texto
+                    method: "POST",                                   
+                    headers: { "Content-Type": "application/json" },  
+                    body: JSON.stringify(datos)                       
                 });
 
-                // Convertimos la respuesta del servidor a JSON
                 const resultado = await respuesta.json();
 
                 // Si el servidor respondió con un error (ej. 400), mostramos el mensaje
                 if (!respuesta.ok) {
-                    // Mostramos el mensaje de error en el HTML
-                    mensaje.textContent = resultado.mensaje || "No se pudo iniciar sesión";
-                    mensaje.className = "alert alert-danger mt-3";
-
-                    // Terminamos la función aquí
+                    // Usamos el contenedor de LOGIN para errores
+                    mensajeLogin.textContent = resultado.mensaje || "No se pudo iniciar sesión";
+                    mensajeLogin.className = "alert alert-danger mt-3";
                     return;
                 }
 
                 // Si llegamos aquí, significa que el login fue correcto
-                mensaje.textContent = "Login exitoso. Redirigiendo...";
-                mensaje.className = "alert alert-success mt-3";
+                mensajeLogin.textContent = "Login exitoso. Redirigiendo...";
+                mensajeLogin.className = "alert alert-success mt-3";
 
                 // Obtenemos informacion del servidor
                 const rol = resultado.usuario.rol;
                 const redirectURL = resultado.usuario.redirectURL;
-                const leagueId = resultado.usuario.leagueId; // ID de la Liga
-                const teamId = resultado.usuario.teamId;   // ID del Equipo
+                const leagueId = resultado.usuario.leagueId; 
+                const teamId = resultado.usuario.teamId;   
 
                 // Guardamos en localstorage
                 localStorage.setItem("userRole", rol);
                 localStorage.setItem("userId", resultado.usuario.id);
 
+                // Manejo de LeagueID
                 if (leagueId) {
                     localStorage.setItem("leagueId", leagueId); 
                 } else {
                     localStorage.removeItem("leagueId"); 
                 }
 
+                // Manejo de TeamID
                 if (teamId) {
                     localStorage.setItem("teamId", teamId); 
                 } else {
                     localStorage.removeItem("teamId"); 
                 }
+                
                 // Usamos la URL de redireccion condicional
                 window.location.href = redirectURL;
 
             } catch (error) {
-                // Si algo falla (internet, servidor apagado, etc.), manejamos el error
+                // Si algo falla, manejamos el error de conexión
                 console.error("Error en login.js (login):", error);
-
-                // Mostramos un mensaje indicando que ocurrió un problema general
-                mensaje.textContent = "Hubo un problema al conectarse al servidor";
-                mensaje.className = "alert alert-danger mt-3";
+                mensajeLogin.textContent = "Hubo un problema al conectarse al servidor";
+                mensajeLogin.className = "alert alert-danger mt-3";
             }
         });
     }
-
-    // Obtenemos el formulario de registro usando su id
-    const formRegister = document.getElementById("form-register");
 
     // Si encontramos el formulario de registro, le agregamos el listener
     if (formRegister) {
@@ -100,31 +98,26 @@ document.addEventListener("DOMContentLoaded", () => {
             // Evitamos que el formulario recargue la página
             evento.preventDefault();
 
-            // Obtenemos el nombre de usuario que escribió el capitán
+            // 1. OBTENCIÓN DE VALORES (Usando los IDs del HTML)
             const nombre = document.getElementById("nombre_capitan").value;
-
-            // Obtenemos el correo que escribió el capitán
             const emailRegistro = document.getElementById("email_capitan").value;
-
-            // Obtenemos la contraseña que escribió el capitán
             const passwordRegistro = document.getElementById("password_capitan").value;
-
-            // Obtenemos la confirmación de la contraseña
             const confirmPassword = document.getElementById("confirm_password_capitan").value;
+            const rol_seleccionado = document.getElementById("rol_register").value; // <-- NUEVO: Rol Seleccionado
 
-            // Obtenemos el contenedor donde mostramos si las contraseñas no coinciden
             const differPasswords = document.getElementById("differPasswords");
 
-            // Revisamos si las contraseñas son iguales
+            // Verificar contraseñas coinciden
             if (passwordRegistro !== confirmPassword) {
                 // Mostramos el mensaje de que las contraseñas no coinciden
                 if (differPasswords) {
                     differPasswords.classList.remove("hidden");
                 }
-                // Mostramos también un mensaje general
-                mensaje.textContent = "Las contraseñas no coinciden";
-                mensaje.className = "alert alert-danger mt-3";
-                // Detenemos aquí el registro
+                // Usamos mensajeRegistro para mostrar el error local de contraseñas distintas
+                if (mensajeRegistro) {
+                    mensajeRegistro.textContent = "Las contraseñas no coinciden";
+                    mensajeRegistro.className = "alert alert-danger mt-3";
+                }
                 return;
             } else {
                 // Si son iguales, ocultamos el mensaje de error de contraseñas distintas
@@ -133,48 +126,120 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
 
-            // Armamos el objeto que mandaremos al backend para registrar al capitán
+            // Armamos el objeto que mandaremos al backend
             const datosRegistro = {
-                nombre: nombre,             // Guardamos el nombre del capitán
-                email: emailRegistro,       // Guardamos el correo del capitán
-                password: passwordRegistro, // Guardamos la contraseña del capitán
-                rol: "capitan"              // Indicamos que este usuario tendrá rol de capitán
+                nombre: nombre,             
+                email: emailRegistro,       
+                password: passwordRegistro, 
+                rol: rol_seleccionado // Rol seleccionado por el usuario
             };
 
             try {
                 // Mandamos la petición al backend usando fetch
                 const respuesta = await fetch("http://localhost:3000/api/auth/register", {
-                    method: "POST",                                   // Indicamos que es POST
-                    headers: { "Content-Type": "application/json" },  // Indicamos que mandamos JSON
-                    body: JSON.stringify(datosRegistro)               // Convertimos los datos a texto
+                    method: "POST",                                   
+                    headers: { "Content-Type": "application/json" },  
+                    body: JSON.stringify(datosRegistro)               
                 });
 
-                // Convertimos la respuesta del servidor a JSON
                 const resultado = await respuesta.json();
 
-                // Si el servidor respondió con error, mostramos el mensaje
+                // Si el servidor respondió con un error (ej. 400), mostramos el mensaje
                 if (!respuesta.ok) {
-                    mensajeRegistro.textContent = resultado.mensaje || "No se pudo registrar el usuario";
-                    mensajeRegistro.className = "alert alert-danger mt-3";
+                    // mensajeRegistro para error de backend (correo duplicado)
+                    if (mensajeRegistro) {
+                        mensajeRegistro.textContent = resultado.mensaje || "No se pudo registrar el usuario";
+                        mensajeRegistro.className = "alert alert-danger mt-3";
+                    }
                     return;
                 }
 
                 // Si el registro salió bien, mostramos un mensaje de éxito
-                mensaje.textContent = "Registro exitoso. Ahora puedes iniciar sesión.";
-                mensaje.className = "alert alert-success mt-3";
+                if (mensajeRegistro) {
+                    mensajeRegistro.textContent = "Registro exitoso. Ahora puedes iniciar sesión.";
+                    mensajeRegistro.className = "alert alert-success mt-3";
+                }
 
                 // Cambiamos de la vista de registro a la de login si la función existe
                 if (typeof toggleForms === "function") {
-                    toggleForms("form-register", "form-login");
+                    setTimeout(() => {
+                        toggleForms("form-register", "form-login");
+                    }, 1000);
                 }
 
             } catch (error) {
                 // Si algo falla, lo mostramos en consola para depurar
                 console.error("Error en login.js (registro):", error);
 
-                // Mostramos un mensaje indicando que hubo un problema general
-                mensaje.textContent = "Hubo un problema al conectarse al servidor";
-                mensaje.className = "alert alert-danger mt-3";
+                //  mensajeRegistro para error de conexión
+                if (mensajeRegistro) {
+                    mensajeRegistro.textContent = "Hubo un problema al conectarse al servidor";
+                    mensajeRegistro.className = "alert alert-danger mt-3";
+                }
+            }
+        });
+    }
+    
+// Obtenemos el formulario de crear liga
+    const formCreateLeague = document.getElementById("form-create-league");
+
+    if (formCreateLeague) {
+        formCreateLeague.addEventListener("submit", async (evento) => {
+            evento.preventDefault();
+            
+            // Contenedor de mensajes de este formulario
+            const mensajeCrearLiga = document.getElementById("mensaje-crear-liga");
+            mensajeCrearLiga.textContent = "";
+            mensajeCrearLiga.className = "";
+            
+            // Obtener los valores de los inputs
+            const adminEmail = document.getElementById("admin_email").value;
+            const adminPassword = document.getElementById("admin_password").value;
+            const nombreLiga = document.getElementById("nombre_liga").value;
+            const equiposMax = document.getElementById("equipos_max").value;
+            const codigoLiga = document.getElementById("codigo_liga").value; 
+            const fechaInicio = document.getElementById("fecha_inicio").value;
+
+            // Armar el objeto con los datos de la liga
+            const leagueData = {
+                admin_email: adminEmail,
+                admin_password: adminPassword,
+                nombre: nombreLiga,
+                max_team_number: equiposMax,
+                league_code: codigoLiga,
+                start_date: fechaInicio
+            };
+
+            try {
+                const response = await fetch("http://localhost:3000/api/league/create", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(leagueData)
+                });
+                
+                const result = await response.json();
+
+                if (!response.ok) {
+                    mensajeCrearLiga.textContent = result.mensaje || "Error desconocido al crear la liga.";
+                    mensajeCrearLiga.className = "alert alert-danger mt-3";
+                    return;
+                }
+                
+                // Guardamos el ID de la liga que acaba de crear
+                localStorage.setItem("leagueId", result.league.id); 
+                
+                mensajeCrearLiga.textContent = `Liga '${result.league.codigo}' creada con éxito. Redirigiendo...`;
+                mensajeCrearLiga.className = "alert alert-success mt-3";
+                
+                // Redirigir al administrador a la vista de administración
+                setTimeout(() => {
+                    window.location.href = "Admin_liga.html"; 
+                }, 1500);
+
+            } catch (error) {
+                console.error("Error de conexión al crear liga:", error);
+                mensajeCrearLiga.textContent = "Error de conexión con el servidor.";
+                mensajeCrearLiga.className = "alert alert-danger mt-3";
             }
         });
     }

@@ -1,41 +1,80 @@
 // Importamos el modelo de League para poder crear y buscar ligas
 const League = require("../models/league_model"); // Cargamos el esquema de liga
 const Team = require("../models/team_model");
+const User = require("../models/user_model");
 const Player = require("../models/player_model");
+
+const bcrypt = require("bcryptjs");
 
 // Creamos una función para registrar una nueva liga
 const createLeague = async (req, res) => { // Definimos la función async que manejará el POST
     try { // Intentamos ejecutar el código de aquí adentro
-        // Sacamos los datos que nos manda el frontend en el cuerpo de la petición
-        const { nombre, max_team_number, league_code, start_date, admin } = req.body; // Leemos los campos que esperamos
+        const {  // Extraemos los datos del cuerpo de la peticion
+            nombre, 
+            max_team_number, 
+            league_code, 
+            start_date, 
+            admin_email, 
+            admin_password 
+        } = req.body;
 
-        // Creamos una nueva instancia de League con esos datos
-        const newLeague = new League({ // Armamos el objeto que se va a guardar en la base
-            nombre: nombre,                 // Guardamos el nombre de la liga
-            max_team_number: max_team_number, // Guardamos el número máximo de equipos
-            league_code: league_code,       // Guardamos el código de la liga
-            start_date: start_date,         // Guardamos la fecha de inicio
-            admin: admin                    // Guardamos el id del usuario administrador
+        //  Buscar usuario por email
+        const adminUser = await User.findOne({ email: admin_email });
+        if (!adminUser) {
+            return res.status(401).json({ mensaje: "El email o la contraseña son incorrectos." });
+        }
+
+        // Comparar contraseña
+        const isPasswordCorrect = await bcrypt.compare(admin_password, adminUser.password);
+        if (!isPasswordCorrect) {
+            return res.status(401).json({ mensaje: "El email o la contraseña son incorrectos." });
+        }
+
+        // Asegurar que el usuario sea Admin
+        if (adminUser.rol !== "admin") {
+            return res.status(403).json({ mensaje: "Acceso denegado. Solo un Administrador puede crear ligas." });
+        }
+        
+        // Evitar duplicados en codigo de liga
+        const existingLeague = await League.findOne({ league_code: league_code });
+        if (existingLeague) {
+            return res.status(400).json({ mensaje: "Este código no se puede utilizar." });
+        }
+
+
+        // Creamos una nueva instancia de League
+        const newLeague = new League({
+            nombre: nombre,                 
+            max_team_number: max_team_number, 
+            league_code: league_code,       
+            start_date: start_date,         
+            admin: adminUser._id 
         });
 
         // Guardamos la nueva liga en MongoDB
-        await newLeague.save(); // Ejecutamos el guardado en la base de datos
+        await newLeague.save();
 
         // Mandamos una respuesta de éxito al frontend
-        return res.status(201).json({ // Enviamos código 201 de creado
-            mensaje: "Liga creada correctamente", // Mandamos un mensaje sencillo
-            league: {                            // Mandamos algunos datos de la liga
-                id: newLeague._id,               // Id generado por Mongo
-                nombre: newLeague.nombre,        // Nombre de la liga
-                codigo: newLeague.league_code,   // Código de la liga
-                maxEquipos: newLeague.max_team_number, // Máximo de equipos
-                fechaInicio: newLeague.start_date      // Fecha de inicio
+        return res.status(201).json({ 
+            mensaje: "Liga creada correctamente", 
+            league: {                            
+                id: newLeague._id,               
+                nombre: newLeague.nombre,        
+                codigo: newLeague.league_code,   
+                maxEquipos: newLeague.max_team_number, 
+                fechaInicio: newLeague.start_date      
             }
         });
-    } catch (error) { // Si algo falla en el try, caemos aquí
-        console.error("Error al crear liga:", error); // Imprimimos el error en la consola del servidor
-        return res.status(500).json({                 // Mandamos código 500 de error interno
-            mensaje: "Error al crear liga"            // Mandamos un mensaje genérico de error
+    } catch (error) { 
+        console.error("Error al crear liga:", error);
+        
+        // Manejar error de unicidad si es de la BD
+        if (error.code && error.code === 11000) {
+            return res.status(400).json({ mensaje: "Ese código de liga ya está en uso." });
+        }
+        
+        return res.status(500).json({                 
+            mensaje: "Error al crear liga"            
         });
     }
 };
