@@ -115,65 +115,70 @@
             </div>
         </form>
 
-        <!-- FORMULARIO: REGISTRO DE CAPITÁN -->
+        <!--  Admin o capitan -->
         <form id="form-register" class="text-center hidden">
-            <!-- Título del formulario -->
-            <h3 class="text-3xl font-bold mb-6">Registro de Capitán</h3>
+            <h3 class="text-3xl font-bold mb-6">Registro</h3>
 
-            <!-- Campo nombre de usuario -->
             <div class="mb-4 w-full text-left">
                 <label for="nombre_capitan" class="block text-sm font-medium mb-1">Nombre de Usuario</label>
                 <input type="text"
-                       id="nombre_capitan"
-                       name="nombre_capitan"
-                       class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg"
-                       required>
+                    id="nombre_capitan"
+                    name="nombre_capitan"
+                    class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg"
+                    required>
             </div>
 
-            <!-- Campo email de capitán -->
             <div class="mb-4 w-full text-left">
                 <label for="email_capitan" class="block text-sm font-medium mb-1">Email</label>
                 <input type="email"
-                       id="email_capitan"
-                       name="email_capitan"
-                       class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg"
-                       required>
+                    id="email_capitan"
+                    name="email_capitan"
+                    class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg"
+                    required>
             </div>
 
-            <!-- Campo contraseña -->
             <div class="mb-4 w-full text-left">
                 <label for="password_capitan" class="block text-sm font-medium mb-1">Contraseña</label>
                 <input type="password"
-                       id="password_capitan"
-                       name="password_capitan"
-                       class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg"
-                       required
-                       minlength="8">
+                    id="password_capitan"
+                    name="password_capitan"
+                    class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg"
+                    required
+                    minlength="8">
             </div>
 
-            <!-- Campo confirmar contraseña -->
             <div class="mb-6 w-full text-left">
                 <label for="confirm_password_capitan" class="block text-sm font-medium mb-1">Confirmar Contraseña</label>
                 <input type="password"
-                       id="confirm_password_capitan"
-                       name="confirm_password_capitan"
-                       class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg"
-                       required
-                       minlength="6">
-                <!-- Mensaje que se muestra si las contraseñas no coinciden -->
+                    id="confirm_password_capitan"
+                    name="confirm_password_capitan"
+                    class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg"
+                    required
+                    minlength="6">
                 <div id="differPasswords"
-                     class="text-xs text-red-500 mt-1 text-left hidden">
+                    class="text-xs text-red-500 mt-1 text-left hidden">
                     Las contraseñas no coinciden.
                 </div>
             </div>
+            
+            <div class="mb-6 w-full text-left">
+                <label for="rol_register" class="block text-sm font-medium mb-1">Tipo de Usuario</label>
+                <select id="rol_register"
+                        name="rol_register"
+                        class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg"
+                        required>
+                    <option value="capitan" selected>Capitán (Administrar Equipo)</option>
+                    <option value="admin">Administrador (Crear Liga)</option>
+                </select>
+            </div>
+            
+            <div id="mensaje-registro" class="mt-3"></div> 
 
-            <!-- Botón para enviar el registro -->
             <button type="submit"
                     class="w-2/3 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg">
                 Crear Cuenta
             </button>
 
-            <!-- Botón para volver al login -->
             <div class="mt-6 pt-4 border-t border-gray-200">
                 <button type="button"
                         class="w-2/3 bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 rounded-lg"

@@ -104,7 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const playerData = {
                 name,
                 position,
-                dorsal: dorsal ? parseInt(dorsal) : null,
+                number: dorsal ? parseInt(dorsal) : null,
                 teamId: teamId // Asociar al equipo correcto
             };
 

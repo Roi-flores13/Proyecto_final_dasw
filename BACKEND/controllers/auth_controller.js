@@ -86,7 +86,7 @@ const loginUser = async (req, res) => {
         let currentTeamId = null;
         
         // El Super Admin siempre va a su panel, no necesita código de liga para esta lógica.
-        if (user.rol === "superadmin") {
+        if (user.rol === "admin") {
             redirectPage = "Admin_liga.html";
         }
         
