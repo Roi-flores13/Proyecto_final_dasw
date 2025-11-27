@@ -42,6 +42,8 @@ app.use(express.static(path.join(__dirname, '..', 'FRONTEND')));
 // Llamamos a la función que conecta a la base de datos
 connectDB();
 
+app.use(express.static(path.join(__dirname, '..', 'FRONTEND', 'views')));
+
 // Definimos una ruta simple para probar que el servidor responde
 app.get("/", (req, res) => {
     // La ruta
