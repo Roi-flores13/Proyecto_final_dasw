@@ -26,49 +26,37 @@
 
 <body>
 
-<!-- Menú de navegación superior -->
 <nav class="navbar navbar-expand-lg navbar-dark header-bg shadow-sm">
-    <!-- Usamos un contenedor que ocupa todo el ancho del navegador -->
     <div class="container-fluid">
-        <!-- Mostramos el nombre de la aplicación con un icono de escudo -->
         <a class="navbar-brand fw-bold fs-4" href="#">
             <i class="bi bi-shield-fill"></i> Mi Liga
         </a>
 
-        <!-- Creamos el botón del menú para pantallas pequeñas -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarNav">
-            <!-- Mostramos el icono del botón del menú -->
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <!-- Aquí va el contenido que se oculta o muestra en pantallas pequeñas -->
         <div class="collapse navbar-collapse" id="navbarNav">
-            <!-- Creamos la lista de enlaces del menú -->
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
-                <!-- Enlace a la vista general del equipo -->
                 <li class="nav-item">
                     <a class="nav-link" href="General_view.html">General</a>
                 </li>
 
-                <!-- Enlace a la tabla general de la liga -->
                 <li class="nav-item">
                     <a class="nav-link" href="Tabla_general.html">Tabla General</a>
                 </li>
 
-                <!-- Enlace a la tabla de goleadores -->
                 <li class="nav-item">
                     <a class="nav-link" href="Top_scorers.html">Tabla Goleadora</a>
                 </li>
             </ul>
 
-            <!-- Mostramos la información del usuario en la parte derecha del menú -->
             <div class="d-flex align-items-center">
-                <!-- Indicamos que este panel es del súper admin -->
-                <span class="navbar-text text-white me-3">
-                        Súper admin
-                    </span>
+                <span class="navbar-text text-white me-3" id="userRoleDisplay">
+                    Cargando rol...
+                </span>
                 <i class="bi bi-person-badge-fill text-white fs-5"></i>
             </div>
         </div>
@@ -81,91 +69,56 @@
         <i class="bi bi-tools"></i> Panel de administración de liga
     </h1>
 
-    <!-- Tarjeta para editar datos generales de la liga -->
     <div class="card mb-3">
-        <!-- Ponemos un encabezado para esta sección -->
         <div class="card-header">
             Datos de la liga
         </div>
-        <!-- Ponemos el contenido principal de esta tarjeta -->
         <div class="card-body">
-            <!-- Usamos una fila para acomodar los campos de forma ordenada -->
             <div class="row g-3">
-                <!-- Campo para editar el nombre de la liga -->
                 <div class="col-md-6">
-                    <!-- Etiqueta para el campo de texto -->
                     <label class="form-label">Nombre de la liga</label>
-                    <!-- Input con un valor de ejemplo para el nombre -->
-                    <input type="text" class="form-control"
-                           value="Liga Intersemanal 2025">
+                    <input type="text" 
+                           id="leagueNameInput" 
+                           class="form-control"
+                           value="Cargando...">
                 </div>
-                <!-- Campo para editar la temporada -->
                 <div class="col-md-6">
-                    <!-- Etiqueta para el campo de temporada -->
-                    <label class="form-label">Temporada</label>
-                    <!-- Input con un valor de ejemplo para la temporada -->
-                    <input type="text" class="form-control"
-                           value="2025">
+                    <label class="form-label">Código de Liga</label>
+                    <input type="text" 
+                           id="leagueCodeDisplay" 
+                           class="form-control"
+                           value="Cargando...">
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Mostramos una tarjeta con la lista de equipos registrados -->
     <div class="card mb-3">
         <div class="card-header">
             Equipos registrados
         </div>
         <div class="card-body">
             <p class="text-muted mb-2">
-                Aquí se muestra una lista de equipos a modo de ejemplo.
+                Lista de equipos registrados en tu liga.
             </p>
-            <ul class="list-group">
-                <!-- Primer equipo de ejemplo -->
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <!-- Mostramos el nombre del equipo -->
-                    Tigres
-                    <!-- Mostramos una etiqueta con el estado del equipo -->
-                    <span class="badge text-bg-secondary">
-                            Registrado
-                        </span>
-                </li>
-                <!-- Segundo equipo de ejemplo -->
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    Leones
-                    <span class="badge text-bg-secondary">
-                            Registrado
-                        </span>
-                </li>
-                <!-- Tercer equipo de ejemplo -->
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    Panteras
-                    <span class="badge text-bg-secondary">
-                            Registrado
-                        </span>
-                </li>
+            <ul class="list-group" id="teamsListGroup">
+                <li class="list-group-item text-center">Cargando equipos...</li>
             </ul>
         </div>
     </div>
 
-    <!-- Tarjeta con acciones que puede hacer el súper admin -->
     <div class="card mb-3">
         <div class="card-header">
             Acciones rápidas
         </div>
         <div class="card-body">
-            <!-- Usamos una fila para acomodar los botones -->
             <div class="row g-2">
-                <!-- Botón para generar el fixture -->
                 <div class="col-md-6">
-                    <!-- Botón que representaría la acción de generar partidos -->
                     <button type="button" class="btn btn-primary w-100">
                         Generar fixture aleatorio
                     </button>
                 </div>
-                <!-- Botón para copiar el link de invitación -->
                 <div class="col-md-6">
-                    <!-- Botón que representaría copiar un enlace de invitación -->
                     <button type="button" class="btn btn-outline-primary w-100">
                         Copiar link de invitación a capitanes
                     </button>
@@ -174,9 +127,7 @@
         </div>
     </div>
 
-    <!-- Botón para volver a la home pública de la liga -->
     <div class="mt-3">
-        <!-- Botón que lleva al usuario a la página principal de la liga -->
         <a href="Home_liga.html" class="btn btn-outline-secondary btn-sm">
             Volver a Home de liga
         </a>
@@ -185,5 +136,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
 </script>
+<script src="../js/admin_liga.js"></script> 
 </body>
 </html>
