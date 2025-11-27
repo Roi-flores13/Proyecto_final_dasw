@@ -1,6 +1,9 @@
 // Importamos express para poder crear el servidor
 const express = require("express");
 
+// Importamos el módulo 'path' para construir rutas absolutas de archivos estáticos
+const path = require('path');
+
 // Importamos cors para permitir peticiones desde el frontend o Postman
 const cors = require("cors");
 
@@ -34,13 +37,15 @@ app.use(cors());
 // Indicamos que vamos a recibir y enviar datos en formato JSON
 app.use(express.json());
 
+// Servimos los archivos estáticos desde el directorio actual
+app.use(express.static(path.join(__dirname, '..', 'FRONTEND')));
 // Llamamos a la función que conecta a la base de datos
 connectDB();
 
 // Definimos una ruta simple para probar que el servidor responde
 app.get("/", (req, res) => {
-    // Mandamos un mensaje sencillo como respuesta
-    res.send("Servidor de la liga funcionando");
+    // La ruta
+    res.sendFile(path.join(__dirname, '..', 'FRONTEND', 'views', 'Login.html'));
 });
 
 // Montamos las rutas de autenticación bajo el prefijo /api/auth
@@ -53,5 +58,5 @@ app.use("/api/player", playerRoutes);
 // Hacemos que el servidor escuche el puerto definido en el archivo .env
 app.listen(process.env.PORT, () => {
     // Mostramos un mensaje indicando que el servidor está corriendo
-    console.log(`✔ Servidor corriendo en http://localhost:${process.env.PORT}`);
+    console.log(`Servidor escuchando en http://localhost:${process.env.PORT || 3000}`);
 });

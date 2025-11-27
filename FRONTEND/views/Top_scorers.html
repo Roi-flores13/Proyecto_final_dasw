@@ -85,6 +85,14 @@
                 <a href="editar_equipo.html" class="text-white text-decoration-none" title="Editar Equipo y Jugadores">
                     <i class="bi bi-gear-fill fs-5"></i>
                 </a>
+
+                <button 
+                    id="logout-button" 
+                    class="btn btn-link text-white ms-2 fs-5 p-0" 
+                    title="Cerrar Sesión" 
+                    onclick="logout()">
+                    <i class="bi bi-box-arrow-right"></i>
+                </button>
             </div>
         </div>
     </div>
@@ -163,6 +171,7 @@
         });
     });
 </script>
+<script src="../js/auth_utils.js"></script>
 <script src="../js/top_scorers.js"></script>
 </body>
 </html>
