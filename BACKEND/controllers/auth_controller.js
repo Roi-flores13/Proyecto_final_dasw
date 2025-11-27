@@ -87,10 +87,19 @@ const loginUser = async (req, res) => {
         
         // El Super Admin siempre va a su panel, no necesita código de liga para esta lógica.
         if (user.rol === "admin") {
-            redirectPage = "Admin_liga.html";
-        }
+
+            const league = await League.findOne({ admin: user._id });
+
+            if(!league) {
+                redirectPage = "Login.html";
+            } else {
+                currentLeagueId = league._id; // Guardamos el ID de la liga
+                redirectPage = "Admin_liga.html";
+            }
+        } 
         
-        if (user.rol === "capitan") {
+        else if (user.rol === "capitan") {
+            
             // Verificamos que haya código de liga
             if (!codigo_liga) {
                 return res.status(400).json({ mensaje: "Debe ingresar un Código de Liga" });
