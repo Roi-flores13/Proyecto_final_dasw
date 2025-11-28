@@ -322,4 +322,76 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
+    const btnBuscarLiga = document.getElementById("btn-buscar-liga"); // Botón "Ir a la Liga"
+    const inputCodigoLigaPublica = document.getElementById("input-codigo-liga"); // Input del código de liga
+    const modalVisitanteMessage = document.getElementById("modalVisitanteMessage");
+
+    // Si encontramos el botón, agregamos el listener
+    if (btnBuscarLiga) {
+        btnBuscarLiga.addEventListener("click", async () => {
+            
+            // Si el contenedor de mensajes no existe, lo creamos temporalmente en el body para evitar errores
+            if (!modalVisitanteMessage) { 
+                console.error("Falta el div #modalVisitanteMessage en el modal Visitar Liga.");
+            } else {
+                modalVisitanteMessage.textContent = "";
+                modalVisitanteMessage.className = "";
+            }
+
+            const codigoLiga = inputCodigoLigaPublica.value.trim();
+
+            if (!codigoLiga) {
+                if (modalVisitanteMessage) {
+                    modalVisitanteMessage.textContent = "Debes ingresar el código de la liga.";
+                    modalVisitanteMessage.className = "alert alert-warning mt-3";
+                }
+                return;
+            }
+
+            //  Verificar la Liga por el código
+            try {
+                const response = await fetch(`http://localhost:3000/api/league/code/${codigoLiga}`);
+                const result = await response.json();
+
+                if (!response.ok) {
+                    if (modalVisitanteMessage) {
+                        modalVisitanteMessage.textContent = result.mensaje || "Código de liga inválido o no encontrado.";
+                        modalVisitanteMessage.className = "alert alert-danger mt-3";
+                    }
+                    return;
+                }
+
+                // Éxito: Guardar leagueId y limpiar datos de sesión
+                localStorage.setItem("leagueId", result.id || result._id); 
+                localStorage.removeItem("userRole"); 
+                localStorage.removeItem("userId"); 
+                localStorage.removeItem("teamId");
+
+                if (modalVisitanteMessage) {
+                    modalVisitanteMessage.textContent = `Liga '${result.nombre}' encontrada. Redirigiendo...`;
+                    modalVisitanteMessage.className = "alert alert-success mt-3";
+                }
+                
+                // Redirigir a Home_liga.html
+                const modalElement = document.getElementById('modalVisitarLiga');
+                const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
+
+                setTimeout(() => {
+                    window.location.href = "Home_liga.html"; 
+                }, 1000);
+
+
+            } catch (error) {
+                console.error("Error al buscar liga:", error);
+                if (modalVisitanteMessage) {
+                    modalVisitanteMessage.textContent = "Error de conexión con el servidor.";
+                    modalVisitanteMessage.className = "alert alert-danger mt-3";
+                }
+            }
+        });
+    }
 });
