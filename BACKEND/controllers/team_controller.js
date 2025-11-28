@@ -85,8 +85,76 @@ const getTeamsByLeague = async (req, res) => { // Definimos la función para el 
     }
 };
 
+// Función para obtener equipo por ID (necesaria para la carga inicial en editar_equipo.html)
+const getTeamById = async (req, res) => {
+    try {
+        const teamId = req.params.teamId;
+        const team = await Team.findById(teamId);
+
+        if (!team) {
+            return res.status(404).json({ mensaje: "Equipo no encontrado." });
+        }
+
+        return res.status(200).json({ team });
+
+    } catch (error) {
+        console.error("Error al obtener equipo:", error);
+        return res.status(500).json({ mensaje: "Error del servidor." });
+    }
+};
+
+// Función para actualizar el equipo (PUT /api/team/:teamId)
+const updateTeam = async (req, res) => {
+    try {
+        const teamId = req.params.teamId;
+        const { name, logo } = req.body;
+        
+        // Obtener el equipo actual
+        const currentTeam = await Team.findById(teamId);
+        if (!currentTeam) {
+            return res.status(404).json({ mensaje: "Equipo no encontrado para actualizar." });
+        }
+        
+        let newLogoUrl = currentTeam.logo;
+
+        // Configurar la nueva imagen si hay un archivo subido
+        if (req.file) {
+            // Lógica de Subida a Cloudinary
+            const file = dataUriToCloudinary(req).content;
+            
+            const result = await cloudinary.uploader.upload(file, {
+                folder: 'ligas-escudos',
+                public_id: `${currentTeam.name.toLowerCase().replace(/\s/g, '_')}_${Date.now()}`
+            });
+
+            newLogoUrl = result.secure_url; 
+                    
+        } else if (logo && logo !== currentTeam.logo) {
+             newLogoUrl = logo;
+        }
+
+        // Actualizar el equipo en la base de datos
+        const updatedTeam = await Team.findByIdAndUpdate(
+            teamId,
+            { name: name, logo: newLogoUrl },
+            { new: true, runValidators: true } 
+        );
+
+        return res.status(200).json({ 
+            mensaje: "Equipo actualizado con éxito.",
+            team: updatedTeam
+        });
+
+    } catch (error) {
+        console.error("Error al actualizar equipo:", error);
+        return res.status(500).json({ mensaje: "Error al actualizar el equipo." });
+    }
+};
+
 // Exportamos las funciones para poder usarlas en las rutas
 module.exports = {
     createTeam,
-    getTeamsByLeague
+    getTeamsByLeague,
+    getTeamById,
+    updateTeam
 };
