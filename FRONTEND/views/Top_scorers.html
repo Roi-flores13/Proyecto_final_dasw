@@ -67,31 +67,43 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                </li>
-                    <li class="nav-item" id="admin-dashboard-li" style="display: none;">
+                
+                <li class="nav-item" id="admin-dashboard-li" style="display: none;">
                     <a class="nav-link fw-bold text-warning" href="Admin_liga.html">
                         <i class="bi bi-person-workspace"></i> Panel Admin
-                     </a>
+                    </a>
                 </li>
+                
                 <li class="nav-item">
                     <a class="nav-link" id="general-nav-link" href="General_view.html">General</a>
                 </li>
+                
                 <li class="nav-item">
                     <a class="nav-link" href="Tabla_general.html">Tabla General</a>
                 </li>
+                
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="#">Tabla Goleadora</a>
+                </li>
+                
             </ul>
             
             <div class="d-flex align-items-center">
-                <span class="navbar-text text-white me-3">
+                
+                <span class="navbar-text text-white me-3" id="user-name-display">
                     Capitán: Usuario
                 </span>
-                <a href="editar_equipo.html" class="text-white text-decoration-none" title="Editar Equipo y Jugadores">
-                    <i class="bi bi-gear-fill fs-5"></i>
-                </a>
+
+                <span id="teamSettingsLink" style="display: none;">
+                    <a href="editar_equipo.html" 
+                       class="text-white text-decoration-none me-3" 
+                       title="Editar Equipo y Jugadores">
+                        <i class="bi bi-gear-fill fs-5"></i>
+                    </a>
+                </span>
 
                 <button 
+                    id="logout-button" 
                     class="btn btn-link text-white ms-2 fs-5 p-0" 
                     title="Cerrar Sesión" 
                     data-bs-toggle="modal" 

@@ -24,7 +24,7 @@ function checkAuthentication() {
     
     // Si pasa las verificaciones, actualiza el navbar
     if (userRoleDisplay) {
-        userRoleDisplay.textContent = `Admin de Liga (ID: ${leagueId.substring(0, 4)}...)`;
+        userRoleDisplay.textContent = `Admin de Liga`;
     }
     return true;
 }
