@@ -1,16 +1,38 @@
 // Importamos el modelo de Team para poder crear y consultar equipos
 const Team = require("../models/team_model"); // Cargamos el esquema de equipos
+const cloudinary = require('cloudinary').v2;
+require('dotenv').config();
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+const DataUriParser = require('datauri/parser');
+const dUri = new DataUriParser();
+const dataUriToCloudinary = req => dUri.format(req.file.mimetype, req.file.buffer);
 
 // Controlador para crear un equipo nuevo
 const createTeam = async (req, res) => { // Definimos la función que manejará el POST
     try {
         // Sacamos del body los datos que nos manda el frontend
-        const { name, logo, leagueId, captainId } = req.body; // Leemos los campos que esperamos
+        const { name, leagueId, captainId } = req.body; // Leemos los campos que esperamos
+        let logoUrl = '';
 
+        if (req.file){
+            const file = dataUriToCloudinary(req).content; // Guardamos la ruta del archivo subido
+            const result = await cloudinary.uploader.upload(file, {
+                folder: 'ligas-escudos', 
+                public_id: `${name.toLowerCase().replace(/\s/g, '_')}_${Date.now()}`
+            });
+            logoUrl = result.secure_url;
+        }  
+        
         // Creamos un nuevo objeto Team con esos datos
         const newTeam = new Team({ // Armamos el objeto que se va a guardar
             name: name,             // Guardamos el nombre del equipo
-            logo: logo,             // Guardamos el logo (imagen o ruta)
+            logo: logoUrl,          // Guardamos el logo (imagen o ruta)
             league: leagueId,       // Guardamos el id de la liga a la que pertenece
             captain: captainId      // Guardamos el id del usuario capitán
         });

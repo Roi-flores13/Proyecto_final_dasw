@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
         window.location.href = "Login.html"; 
         return; 
     }
-    
+
     // Listener del Formulario
     if (formAddTeam) {
         formAddTeam.addEventListener("submit", async (evento) => {
@@ -26,44 +26,43 @@ document.addEventListener("DOMContentLoaded", () => {
             mensaje.textContent = "";
             formAddTeam.classList.remove('was-validated');
 
-            // Recolección de datos
             const name = teamNameInput.value.trim();
-            const logo = teamLogoInput ? teamLogoInput.value.trim() : ''; // Si existe, usa el valor, si no, vacío
+            const teamFile = document.getElementById("team_file").files[0]; // Obtener el archivo
 
-            // Armamos el objeto de datos que el backend espera
-            const teamData = {
-                name: name,
-                logo: logo,
-                leagueId: leagueId,  
-                captainId: userId
-            };
-
-            // Validar que el campo requerido no esté vacío antes de enviar
             if (!name) {
                 formAddTeam.classList.add('was-validated');
                 mensaje.textContent = "El nombre del equipo es obligatorio.";
                 return;
             }
 
+            // 1. Crear FormData para enviar archivos y otros campos
+            const formData = new FormData();
+            formData.append("name", name);
+            formData.append("leagueId", leagueId);
+            formData.append("captainId", userId);
+            
+            if (teamFile) {
+                formData.append("team_file", teamFile); // CLAVE: Añadir el archivo
+            }
+            
+            // 2. Enviar la petición POST con FormData
             try {
-            // Enviar la petición POST al backend
                 const response = await fetch(BACKEND_URL, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(teamData)
+                    body: formData // Enviar el objeto FormData
                 });
 
                 const result = await response.json();
 
                 // Manejo de Errores del Servidor
                 if (!response.ok) {
-                    mensaje.textContent = result.mensaje || "Error al registrar el equipo. Intente de nuevo.";
+                    mensaje.textContent = result.mensaje || "Error al registrar el equipo.";
                     return;
                 }
 
                 // Éxito y Redirección
                 mensaje.textContent = "¡Equipo creado con éxito!";
-                localStorage.setItem("teamId", result.team.id); // Guardar el ID del equipo creado
+                localStorage.setItem("teamId", result.team.id); 
 
                 setTimeout(() => {
                     window.location.href = "General_view.html"; 
