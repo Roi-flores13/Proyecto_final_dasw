@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>General del Equipo</title>
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
@@ -15,6 +16,11 @@
         }
         .header-bg {
             background-color: #760909;
+        }
+        /* Estilos generales para las tarjetas de contenido */
+        .card-stat {
+            border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
     </style>
 </head>
@@ -34,7 +40,7 @@
                     <a class="nav-link active" aria-current="page" href="#">General</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="Tabla_general.html">Tabla General</a>
+                    <a class="nav-link " href="Tabla_general.html">Tabla General</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="Top_scorers.html">Tabla Goleadora</a>
@@ -61,109 +67,110 @@
     </div>
 </nav>
 
-<div class="container mt-5">
+<main class="container py-5">
     
-    <h2 class="mb-4">Dashboard: <span class="fw-bold text-danger">Real Atlético</span></h2>
+    <div class="d-flex align-items-center mb-4">
+        <img id="teamLogoDisplay" 
+            src="https://placehold.co/80x80/cccccc/ffffff?text=LOGO" 
+            alt="Escudo del Equipo" 
+            class="rounded-circle shadow-sm me-4" 
+            style="width: 80px; height: 80px; object-fit: cover; border: 3px solid #760909;">
+        
+        <h2 class="mb-0"><span class="fw-bold text-danger" id="teamNameDisplay">Cargando Equipo...</span></h2>
+    </div>
 
-    <div class="row">
+    <div class="row g-4">
         
         <div class="col-lg-8">
             
-            <div class="card shadow-sm mb-4">
+            <h3 class="h5 mb-3">Resumen de la Liga</h3>
+            <div class="card shadow-sm card-stat mb-4" id="positionCard">
                 <div class="card-body text-center p-4">
-                    <h5 class="card-title text-muted">Posición en la Liga</h5>
-                    <p class="card-text display-4 fw-bold text-danger">5.°<sup class="fs-4">to</sup></p>
-                    <p class="mb-0 fs-5">12 Puntos (3G - 3E - 1P)</p>
-                </div>
+                    <p class="text-muted">Cargando posición y estadísticas...</p>
+                    </div>
             </div>
-
-            <div class="card shadow-sm mb-4">
-                <div class="card-header fw-bold">
-                    <i class="bi bi-calendar-event"></i> Próximo Juego
+            
+            <h3 class="h5 mb-3">Partidos</h3>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card shadow-sm card-stat h-100" id="nextMatchCard">
+                        <div class="card-header fw-bold">
+                            <i class="bi bi-calendar-event"></i> Próximo Juego
+                        </div>
+                        <div class="card-body text-center">
+                            <p class="text-muted">Cargando datos...</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body p-4 text-center">
-                    <h4 class="fw-bold">Real Atlético <span class="text-muted">vs</span> Los Cuervos FC</h4>
-                    <p class="fs-5 text-muted mb-0">Jornada 8</p>
-                    <p class="fs-5">Domingo, 16 de Nov - 14:00 hrs</p>
+                <div class="col-md-6">
+                    <div class="card shadow-sm card-stat h-100" id="lastMatchCard">
+                        <div class="card-header fw-bold">
+                            <i class="bi bi-clock-history"></i> Juego Anterior
+                        </div>
+                        <div class="card-body text-center">
+                            <p class="text-muted">Cargando datos...</p>
+                        </div>
+                    </div>
                 </div>
             </div>
             
-            <div class="card shadow-sm mb-4">
-                <div class="card-header fw-bold">
-                    <i class="bi bi-clock-history"></i> Juego Anterior
-                </div>
-                <div class="card-body p-4 text-center">
-                    <h4 class="fw-bold">Real Atlético <span class="fs-2 text-success">2</span> - <span class="fs-2 text-muted">1</span> Dep. Halcones</h4>
-                    <p class="fs-5 text-muted mb-0">Jornada 7 - Resultado Final</p>
-                </div>
-            </div>
+        </div>
 
-        </div> <div class="col-lg-4">
+        <div class="col-lg-4">
             
             <div class="card shadow-sm mb-4">
-                <div class="card-header bg-dark text-white">
-                    <h5 class="mb-0 fw-bold">
-                        <i class="bi bi-trophy-fill text-warning"></i> 
-                        Top Anotadores del Equipo
-                    </h5>
+                <div class="card-header fw-bold text-white bg-dark">
+                    Opciones de Capitán
                 </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item d-flex justify-content-between align-items-center fs-5 p-3">
-                        <span>
-                            <i class="bi bi-person-fill text-muted me-2"></i>
-                            Miguel "Matador" Sánchez
-                        </span>
-                        <span class="badge bg-danger rounded-pill fs-6" style="width: 45px;">12</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center fs-5 p-3">
-                        <span>
-                            <i class="bi bi-person-fill text-muted me-2"></i>
-                            Esteban Paredes
-                        </span>
-                        <span class="badge bg-danger rounded-pill fs-6" style="width: 45px;">7</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center fs-5 p-3">
-                        <span>
-                            <i class="bi bi-person-fill text-muted me-2"></i>
-                            Alan Torres
-                        </span>
-                        <span class="badge bg-secondary rounded-pill fs-6" style="width: 45px;">2</span>
-                    </li>
-                </ul>
-                <div class="card-footer text-center bg-light">
-                    <a href="Top_scorers.html" class="btn btn-outline-danger btn-sm">
-                        Ver Tabla Goleadora Completa 
-                        <i class="bi bi-arrow-right-short"></i>
+                <div class="list-group list-group-flush">
+                    <a href="Editar_equipo.html" class="list-group-item list-group-item-action">
+                        <i class="bi bi-pencil-square me-2"></i> Editar Equipo y Jugadores
+                    </a>
+                    <a href="Tabla_general.html" class="list-group-item list-group-item-action">
+                        <i class="bi bi-bar-chart-fill me-2"></i> Ver Tabla General
                     </a>
                 </div>
             </div>
-        </div> </div> </div>
 
-        <div class="modal fade" id="confirmLogoutModal" tabindex="-1" aria-labelledby="confirmLogoutLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                    <h5 class="modal-title" id="confirmLogoutLabel">Cerrar de Sesión</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        ¿Estás seguro de que quieres cerrar tu sesión actual?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        
-                        <button 
-                            type="button" 
-                            class="btn btn-danger" 
-                            onclick="logout()"
-                            data-bs-dismiss="modal"> 
-                            Cerrar Sesión
-                        </button>
-                    </div>
+            <div class="card shadow-sm card-stat">
+                <div class="card-header fw-bold">
+                    <i class="bi bi-trophy-fill text-warning me-2"></i> Top Anotadores (Equipo)
                 </div>
+                <ul class="list-group list-group-flush" id="teamScorersList">
+                    <li class="list-group-item text-center text-muted">Cargando goleadores...</li>
+                </ul>
+            </div>
+            
+        </div>
+    </div>
+
+</main>
+
+<div class="modal fade" id="confirmLogoutModal" tabindex="-1" aria-labelledby="confirmLogoutLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmLogoutLabel">Confirmar Cierre de Sesión</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de que quieres cerrar tu sesión actual y volver a la pantalla de inicio?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button 
+                    type="button" 
+                    class="btn btn-danger" 
+                    onclick="logout()"
+                    data-bs-dismiss="modal"> 
+                    Cerrar Sesión
+                </button>
             </div>
         </div>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-        <script src="../js/auth_utils.js"></script>
-</body>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script src="../js/auth_utils.js"></script>
+<script src="../js/general_view.js"></script> </body>
 </html>
