@@ -156,15 +156,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 // Si el registro salió bien, mostramos un mensaje de éxito
                 if (mensajeRegistro) {
-                    mensajeRegistro.textContent = "Registro exitoso. Ahora puedes iniciar sesión.";
+                    mensajeRegistro.textContent = "Registro exitoso. Continuemos...";
                     mensajeRegistro.className = "alert alert-success mt-3";
                 }
 
-                // Cambiamos de la vista de registro a la de login si la función existe
-                if (typeof toggleForms === "function") {
-                    setTimeout(() => {
-                        toggleForms("form-register", "form-login");
-                    }, 1000);
+                // Guardar userId y userRole de la respuesta
+                localStorage.setItem("userId", resultado.usuario.id);
+                localStorage.setItem("userRole", resultado.usuario.rol);
+
+                // Si el nuevo usuario es 'capitan', mostramos el Modal
+                if (resultado.usuario.rol === 'capitan') {
+                    
+                    const firstLoginModal = new bootstrap.Modal(document.getElementById('firstLoginLeagueModal'));
+                    
+                    // Ocultamos el formulario de registro y mostramos el modal
+                    if (formRegister) formRegister.classList.add('hidden');
+                    firstLoginModal.show();
+                    
+                    // Detenemos la ejecución aquí, el modal tomará el control.
+                    return; 
+                } 
+                
+                // Si no es capitán o si es Admin, lo redirigimos al login principal para que haga el flujo de "Crear Liga" o "Login"
+                else if (resultado.usuario.rol === 'admin'){
+
+                    if (typeof toggleForms === "function") {
+                        setTimeout(() => {
+                            toggleForms("form-register", "form-create-league");
+                        }, 100);
+                    }
+                    return;
                 }
 
             } catch (error) {
@@ -240,6 +261,64 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.error("Error de conexión al crear liga:", error);
                 mensajeCrearLiga.textContent = "Error de conexión con el servidor.";
                 mensajeCrearLiga.className = "alert alert-danger mt-3";
+            }
+        });
+    }
+
+    // Obtenemos el formulario y los inputs del primer modal de inicio de sesion
+    const formModalLiga = document.getElementById("formModalLiga");
+    const inputCodigoLigaModal = document.getElementById("input-codigo-liga-modal");
+    const modalLeagueMessage = document.getElementById("modalLeagueMessage"); // Contenedor de mensajes del modal
+
+    if (formModalLiga) {
+        formModalLiga.addEventListener("submit", async (evento) => {
+            evento.preventDefault();
+            
+            modalLeagueMessage.textContent = "";
+            modalLeagueMessage.className = "";
+
+            const codigoLiga = inputCodigoLigaModal.value.trim();
+            
+            if (!codigoLiga) {
+                modalLeagueMessage.textContent = "Debes ingresar el código de la liga.";
+                modalLeagueMessage.className = "alert alert-warning mt-3";
+                return;
+            }
+
+            // Verificar la Liga por el código
+            try {
+                const response = await fetch(`http://localhost:3000/api/league/code/${codigoLiga}`);
+                const result = await response.json();
+
+                if (!response.ok) {
+                    modalLeagueMessage.textContent = result.mensaje || "Código de liga inválido o no encontrado.";
+                    modalLeagueMessage.className = "alert alert-danger mt-3";
+                    return;
+                }
+
+                // Guardamos leagueId y redirigimos a crear equipo
+                localStorage.setItem("leagueId", result.id);
+                
+                modalLeagueMessage.textContent = `¡Unido a ${result.nombre}! Redirigiendo a crear equipo...`;
+                modalLeagueMessage.className = "alert alert-success mt-3";
+                
+                // Ocultar el modal
+                const modalElement = document.getElementById('firstLoginLeagueModal');
+                const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
+
+                // Redirigir a Add_team.html
+                setTimeout(() => {
+                    window.location.href = "Add_team.html"; 
+                }, 1000);
+
+
+            } catch (error) {
+                console.error("Error al buscar liga:", error);
+                modalLeagueMessage.textContent = "Error de conexión al buscar la liga.";
+                modalLeagueMessage.className = "alert alert-danger mt-3";
             }
         });
     }
