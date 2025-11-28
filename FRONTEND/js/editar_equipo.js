@@ -70,16 +70,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 <tr>
                     <td class="fw-bold">${player.name}</td>
                     <td>${player.position}</td>
-                    <td class="text-center">${player.dorsal || '-'}</td>
-                    <td class="text-end">
+                    <td class="text-center">${player.number || '-'}</td>  <td class="text-end">
                         <button class="btn btn-outline-primary btn-sm"
                                 data-bs-toggle="modal"
                                 data-bs-target="#editPlayerModal"
                                 data-player-id="${player._id}"
                                 data-player-name="${player.name}"
                                 data-player-position="${player.position}"
-                                data-player-dorsal="${player.dorsal || ''}">
-                            <i class="bi bi-pencil"></i>
+                                data-player-dorsal="${player.number || ''}"> <i class="bi bi-pencil"></i>
                         </button>
                         <button class="btn btn-outline-danger btn-sm" data-player-id="${player._id}"><i class="bi bi-trash"></i></button>
                     </td>
