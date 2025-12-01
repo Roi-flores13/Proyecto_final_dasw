@@ -18,17 +18,24 @@ const createTeam = async (req, res) => { // Definimos la función que manejará 
     try {
         // Sacamos del body los datos que nos manda el frontend
         const { name, leagueId, captainId } = req.body; // Leemos los campos que esperamos
+
+        // VALIDACIÓN: Verificar si el capitán ya tiene un equipo
+        const existingTeam = await Team.findOne({ captain: captainId });
+        if (existingTeam) {
+            return res.status(400).json({ mensaje: "Ya tienes un equipo registrado." });
+        }
+
         let logoUrl = '';
 
-        if (req.file){
+        if (req.file) {
             const file = dataUriToCloudinary(req).content; // Guardamos la ruta del archivo subido
             const result = await cloudinary.uploader.upload(file, {
-                folder: 'ligas-escudos', 
+                folder: 'ligas-escudos',
                 public_id: `${name.toLowerCase().replace(/\s/g, '_')}_${Date.now()}`
             });
             logoUrl = result.secure_url;
-        }  
-        
+        }
+
         // Creamos un nuevo objeto Team con esos datos
         const newTeam = new Team({ // Armamos el objeto que se va a guardar
             name: name,             // Guardamos el nombre del equipo
@@ -108,39 +115,39 @@ const updateTeam = async (req, res) => {
     try {
         const teamId = req.params.teamId;
         const { name, logo } = req.body;
-        
+
         // Obtener el equipo actual
         const currentTeam = await Team.findById(teamId);
         if (!currentTeam) {
             return res.status(404).json({ mensaje: "Equipo no encontrado para actualizar." });
         }
-        
+
         let newLogoUrl = currentTeam.logo;
 
         // Configurar la nueva imagen si hay un archivo subido
         if (req.file) {
             // Lógica de Subida a Cloudinary
             const file = dataUriToCloudinary(req).content;
-            
+
             const result = await cloudinary.uploader.upload(file, {
                 folder: 'ligas-escudos',
                 public_id: `${currentTeam.name.toLowerCase().replace(/\s/g, '_')}_${Date.now()}`
             });
 
-            newLogoUrl = result.secure_url; 
-                    
+            newLogoUrl = result.secure_url;
+
         } else if (logo && logo !== currentTeam.logo) {
-             newLogoUrl = logo;
+            newLogoUrl = logo;
         }
 
         // Actualizar el equipo en la base de datos
         const updatedTeam = await Team.findByIdAndUpdate(
             teamId,
             { name: name, logo: newLogoUrl },
-            { new: true, runValidators: true } 
+            { new: true, runValidators: true }
         );
 
-        return res.status(200).json({ 
+        return res.status(200).json({
             mensaje: "Equipo actualizado con éxito.",
             team: updatedTeam
         });
@@ -151,10 +158,39 @@ const updateTeam = async (req, res) => {
     }
 };
 
+// Función para eliminar equipo (DELETE /api/team/:teamId)
+const deleteTeam = async (req, res) => {
+    try {
+        const teamId = req.params.teamId;
+
+        // 1. Eliminar el equipo
+        const deletedTeam = await Team.findByIdAndDelete(teamId);
+
+        if (!deletedTeam) {
+            return res.status(404).json({ mensaje: "Equipo no encontrado" });
+        }
+
+        // 2. Eliminar jugadores asociados
+        await Player.deleteMany({ team: teamId });
+
+        // 3. (Opcional) Actualizar partidos donde este equipo jugaba?
+        // Podríamos ponerlos en null o borrarlos. Por ahora lo dejamos simple.
+
+        return res.status(200).json({
+            mensaje: "Equipo eliminado correctamente (y sus jugadores)"
+        });
+
+    } catch (error) {
+        console.error("Error al eliminar equipo:", error);
+        return res.status(500).json({ mensaje: "Error al eliminar el equipo" });
+    }
+};
+
 // Exportamos las funciones para poder usarlas en las rutas
 module.exports = {
     createTeam,
     getTeamsByLeague,
     getTeamById,
-    updateTeam
+    updateTeam,
+    deleteTeam
 };

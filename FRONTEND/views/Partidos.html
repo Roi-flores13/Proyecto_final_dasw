@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Partidos / Jornadas</title>
@@ -7,52 +8,169 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8f9fac6; min-height: 100vh; }
-        .header-bg { background-color: #760909; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fac6;
+            min-height: 100vh;
+        }
+
+        .header-bg {
+            background-color: #760909;
+        }
     </style>
 </head>
+
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark header-bg shadow-sm">
-    <div class="container-fluid">
-        <a class="navbar-brand fw-bold fs-4" href="#"><i class="bi bi-shield-fill"></i> Mi Liga</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+    <nav class="navbar navbar-expand-lg navbar-dark header-bg shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold fs-4" href="General_view.html">
+                <i class="bi bi-shield-fill"></i> Mi Liga
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item"><a class="nav-link" href="General_view.html">General</a></li>
-                <li class="nav-item"><a class="nav-link" href="Tabla_general.html">Tabla General</a></li>
-                <li class="nav-item"><a class="nav-link" href="Top_scorers.html">Tabla Goleadora</a></li>
-            </ul>
-            <div class="d-flex align-items-center">
-                <span class="navbar-text text-white me-3">Público</span>
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                    <li class="nav-item" id="admin-dashboard-li" style="display: none;">
+                        <a class="nav-link fw-bold text-warning" href="Admin_liga.html">
+                            <i class="bi bi-person-workspace"></i> Panel Admin
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" id="general-nav-link" href="General_view.html">General</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Partidos</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="Tabla_general.html">Tabla General</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="Top_scorers.html">Tabla Goleadora</a>
+                    </li>
+                </ul>
+
+                <div class="d-flex align-items-center">
+
+                    <span class="navbar-text text-white me-3" id="user-name-display">
+                        Usuario
+                    </span>
+
+                    <span id="teamSettingsLink" style="display: none;">
+                        <a href="editar_equipo.html" class="text-white text-decoration-none me-3"
+                            title="Editar Equipo y Jugadores">
+                            <i class="bi bi-gear-fill fs-5"></i>
+                        </a>
+                    </span>
+
+                    <button id="logout-button" class="btn btn-link text-white ms-2 fs-5 p-0" title="Cerrar Sesión"
+                        data-bs-toggle="modal" data-bs-target="#confirmLogoutModal">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container py-4">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <h1 class="h4 m-0">Partidos</h1>
+            <div class="d-flex gap-2 flex-wrap" id="jornadas-container">
+                <!-- Los botones de jornadas se generan dinámicamente desde partidos.js -->
+            </div>
+        </div>
+
+        <!-- Botón para crear partido (Solo Admin) -->
+        <div class="text-end mb-3" id="adminMatchActions" style="display: none;">
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createMatchModal">
+                <i class="bi bi-plus-lg"></i> Nuevo Partido
+            </button>
+        </div>
+
+        <!-- Lista de partidos (ejemplo) -->
+        <div class="list-group">
+        </div>
+
+        <div class="mt-4">
+            <a href="Home_liga.html" class="btn btn-outline-primary btn-sm">Home de liga</a>
+        </div>
+    </main>
+
+    <!-- Modal Crear Partido -->
+    <div class="modal fade" id="createMatchModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Crear Nuevo Partido</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formCreateMatch">
+                        <div class="mb-3">
+                            <label for="matchDate" class="form-label">Fecha</label>
+                            <input type="date" class="form-control" id="matchDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="matchTime" class="form-label">Hora</label>
+                            <input type="time" class="form-control" id="matchTime" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="matchGameweek" class="form-label">Jornada</label>
+                            <input type="number" class="form-control" id="matchGameweek" min="1" value="1" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <label for="homeTeamSelect" class="form-label">Local</label>
+                                <select class="form-select" id="homeTeamSelect" required>
+                                    <option value="">Cargando...</option>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label for="awayTeamSelect" class="form-label">Visitante</label>
+                                <select class="form-select" id="awayTeamSelect" required>
+                                    <option value="">Cargando...</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" onclick="createMatch()">Crear Partido</button>
+                </div>
             </div>
         </div>
     </div>
-</nav>
 
-<main class="container py-4">
-    <div class="d-flex align-items-center justify-content-between mb-3">
-        <h1 class="h4 m-0">Partidos</h1>
-        <div class="d-flex gap-2">
-            <a class="btn btn-outline-secondary btn-sm" href="#">Jornada 1</a>
-            <a class="btn btn-outline-secondary btn-sm" href="#">Jornada 2</a>
-            <a class="btn btn-outline-secondary btn-sm" href="#">Jornada 3</a>
+    <div class="modal fade" id="confirmLogoutModal" tabindex="-1" aria-labelledby="confirmLogoutLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmLogoutLabel">Confirmar Cierre de Sesión</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    ¿Estás seguro de que quieres cerrar tu sesión actual?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" onclick="logout()" data-bs-dismiss="modal">Cerrar
+                        Sesión</button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Lista de partidos (ejemplo) -->
-    <div class="list-group">
-    </div>
-
-    <div class="mt-4">
-        <a href="Home_liga.html" class="btn btn-outline-primary btn-sm">Home de liga</a>
-    </div>
-</main>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="../js/partidos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/auth_utils.js"></script>
+    <script src="../js/partidos.js"></script>
 </body>
+
 </html>

@@ -1,11 +1,12 @@
 // Función global para cerrar sesión 
 function logout() {
     try {
-        // Limpiar el almacenamiento local
-        localStorage.clear(); 
+        localStorage.removeItem("userId");
+        localStorage.removeItem("userRole");
+        localStorage.removeItem("leagueId");
+        localStorage.removeItem("teamId");
 
-        // Redirigir al usuario a la página de inicio de sesión
-        window.location.href = "/Login.html"; 
+        window.location.href = "Login.html";
 
     } catch (error) {
         console.error("Error al intentar cerrar sesión:", error);
@@ -18,7 +19,7 @@ function logout() {
 function initializeNavbarControl() {
     // OBTENER DATOS
     const userRole = localStorage.getItem("userRole");
-    const teamId = localStorage.getItem("teamId"); 
+    const teamId = localStorage.getItem("teamId");
 
     const adminLinkLi = document.getElementById("admin-dashboard-li");
     const generalNavLink = document.getElementById("general-nav-link");
@@ -26,21 +27,32 @@ function initializeNavbarControl() {
     const userNameDisplay = document.getElementById("user-name-display");
 
 
-    // CONTROL DE REDIRECCIÓN 'GENERAL' (CLAVE: Home_liga.html para Admin)
+    const navbarBrand = document.querySelector('.navbar-brand');
+
+    // CONTROL DE REDIRECCIÓN 'GENERAL' Y BRAND
+    // Regla: 
+    // - Admin -> Home_liga.html (o Admin_liga.html si prefiere, pero el usuario pidió Home)
+    // - Capitán -> General_view.html
+    // - Público (sin rol) -> Home_liga.html
+
+    let targetUrl = "Home_liga.html"; // Default público
+    if (userRole === 'capitan') {
+        targetUrl = "General_view.html";
+    }
+
     if (generalNavLink) {
-        if (userRole === 'admin') {
-            generalNavLink.href = "Home_liga.html";
-        } else {
-            // Capitán y otros usuarios ven su dashboard específico
-            generalNavLink.href = "General_view.html";
-        }
+        generalNavLink.href = targetUrl;
+    }
+
+    if (navbarBrand) {
+        navbarBrand.href = targetUrl;
     }
 
 
     // CONTROL DE VISIBILIDAD DEL PANEL ADMIN
     if (adminLinkLi) {
         if (userRole === 'admin') {
-            adminLinkLi.style.display = 'list-item'; 
+            adminLinkLi.style.display = 'list-item';
         } else {
             adminLinkLi.style.display = 'none';
         }
@@ -53,21 +65,21 @@ function initializeNavbarControl() {
         const isCaptainWithTeam = userRole === 'capitan' && teamId;
 
         if (isCaptainWithTeam) {
-            teamSettingsLink.style.display = 'inline'; 
+            teamSettingsLink.style.display = 'inline';
         } else {
             teamSettingsLink.style.display = 'none';
         }
     }
-    
+
     // CONTROL DEL TEXTO DEL ROL (Si aplica)
     if (userNameDisplay) {
-         if (userRole === 'admin') {
-             userNameDisplay.textContent = 'Admin de Liga';
-         } else if (userRole === 'capitan') {
-             userNameDisplay.textContent = 'Capitán';
-         } else {
-             userNameDisplay.textContent = 'Público';
-         }
+        if (userRole === 'admin') {
+            userNameDisplay.textContent = 'Admin de Liga';
+        } else if (userRole === 'capitan') {
+            userNameDisplay.textContent = 'Capitán';
+        } else {
+            userNameDisplay.textContent = 'Público';
+        }
     }
 }
 

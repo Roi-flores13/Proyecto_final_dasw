@@ -5,16 +5,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Elementos del DOM
     const formEditarEquipo = document.getElementById("formEditarEquipo");
-    const formAgregarJugador = document.getElementById("formAgregarJugador"); 
+    const formAgregarJugador = document.getElementById("formAgregarJugador");
     const formEditarJugador = document.getElementById("formEditarJugador");
-    
-    const playersTableBody = document.getElementById("playersTableBody"); 
+
+    const playersTableBody = document.getElementById("playersTableBody");
     const nombreEquipoInput = document.getElementById("nombreEquipo");
     const teamFile = document.getElementById("team_file_input");
     const teamLogoUrlActual = document.getElementById("team_logo_url_actual");
     const imagePreview = document.getElementById("imagePreview");
     const teamNameHeader = document.getElementById("teamNameHeader");
-    
+
     const teamMessage = document.getElementById("teamMessage");
     const playerMessage = document.getElementById("playerMessage");
     const modalPlayerMessage = document.getElementById("modalPlayerMessage"); // <-- NUEVO
@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
         window.location.href = "Add_team.html";
         return;
     }
-    
+
     // Carga datos del equipo y jugadores
     async function loadTeamData() {
         try {
@@ -48,13 +48,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 // Nombre y Logo
                 nombreEquipoInput.value = dataTeam.team.name || '';
                 teamNameHeader.textContent = `Equipo: ${dataTeam.team.name || 'Cargando...'}`;
-                
+
                 const logo = dataTeam.team.logo;
                 if (logo) {
-                    teamLogoUrlActual.value = logo; 
+                    teamLogoUrlActual.value = logo;
                     imagePreview.src = logo;
                 } else {
-                    imagePreview.src = "https://placehold.co/150x150/760909/ffffff?text=LOGO"; 
+                    imagePreview.src = "https://placehold.co/150x150/760909/ffffff?text=LOGO";
                 }
             } else {
                 console.error("Error al cargar equipo:", dataTeam.mensaje);
@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // Cargar Jugadores (GET /api/player/team/:teamId)
             const responsePlayers = await fetch(`${API_PLAYER_URL}/team/${teamId}`);
             const dataPlayers = await responsePlayers.json();
-            
+
             if (responsePlayers.ok) {
                 renderPlayersTable(dataPlayers.players);
             } else {
@@ -80,7 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Añadir listeners de edición/eliminación a la tabla de jugadores
     function renderPlayersTable(players) {
         if (!playersTableBody) return;
-        playersTableBody.innerHTML = ''; 
+        playersTableBody.innerHTML = '';
 
         if (players.length === 0) {
             playersTableBody.innerHTML = '<tr><td colspan="4" class="text-center">Aún no hay jugadores registrados.</td></tr>';
@@ -109,7 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
             `;
             playersTableBody.innerHTML += row;
         });
-        
+
         addDeleteListeners();
     }
 
@@ -117,17 +117,17 @@ document.addEventListener("DOMContentLoaded", () => {
     if (formEditarEquipo) {
         formEditarEquipo.addEventListener("submit", async (e) => {
             e.preventDefault();
-            
+
             teamMessage.textContent = '';
-            
+
             const formData = new FormData();
             formData.append("name", nombreEquipoInput.value.trim());
 
             const selectedFile = teamFile ? teamFile.files[0] : null;
             if (selectedFile) {
-                 formData.append("team_file", selectedFile); 
+                formData.append("team_file", selectedFile);
             } else {
-                 formData.append("logo", teamLogoUrlActual.value.trim());
+                formData.append("logo", teamLogoUrlActual.value.trim());
             }
 
             try {
@@ -137,11 +137,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
 
                 const result = await response.json();
-                
+
                 if (response.ok) {
                     teamMessage.textContent = `¡Equipo "${result.team.name}" actualizado con éxito!`;
                     teamMessage.className = "alert alert-success mt-3";
-                    loadTeamData(); 
+                    loadTeamData();
                 } else {
                     teamMessage.textContent = result.mensaje || "Error al actualizar el equipo.";
                     teamMessage.className = "alert alert-danger mt-3";
@@ -159,18 +159,18 @@ document.addEventListener("DOMContentLoaded", () => {
     if (formAgregarJugador) {
         formAgregarJugador.addEventListener("submit", async (e) => {
             e.preventDefault();
-            
+
             const name = document.getElementById("nombreJugador").value.trim();
             const position = document.getElementById("posicionJugador").value;
             const dorsalInput = document.getElementById("dorsalJugador").value.trim();
-            
+
             let dorsalValue = null;
             if (dorsalInput && dorsalInput !== "") {
                 dorsalValue = parseInt(dorsalInput);
                 if (isNaN(dorsalValue) || dorsalValue < 1 || dorsalValue > 99) {
-                     playerMessage.textContent = "El dorsal debe ser un número entre 1 y 99.";
-                     playerMessage.className = "alert alert-warning mt-3";
-                     return;
+                    playerMessage.textContent = "El dorsal debe ser un número entre 1 y 99.";
+                    playerMessage.className = "alert alert-warning mt-3";
+                    return;
                 }
             }
 
@@ -178,7 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 name,
                 position,
                 number: dorsalValue,
-                teamId: teamId 
+                teamId: teamId
             };
 
             try {
@@ -189,12 +189,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
 
                 const result = await response.json();
-                
+
                 if (response.ok) {
                     playerMessage.textContent = `¡${name} agregado con éxito! Dorsal: ${dorsalValue || 'N/A'}`;
                     playerMessage.className = "alert alert-success mt-3";
                     formAgregarJugador.reset();
-                    loadTeamData(); 
+                    loadTeamData();
                 } else {
                     playerMessage.textContent = result.mensaje || "Error desconocido al crear jugador.";
                     playerMessage.className = "alert alert-danger mt-3";
@@ -218,7 +218,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 try {
                     const response = await fetch(`${API_PLAYER_URL}/${playerId}`, { method: 'DELETE' });
                     const result = await response.json();
-                    
+
                     if (response.ok) {
                         playerMessage.textContent = `Jugador eliminado con éxito.`;
                         playerMessage.className = "alert alert-success mt-3";
@@ -236,7 +236,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Editar jugador (Modal y Envío PUT)
-    
+
     // Llenar Modal al Abrir
     if (editPlayerModalElement) {
         editPlayerModalElement.addEventListener('show.bs.modal', (e) => {
@@ -245,7 +245,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const name = button.getAttribute('data-player-name');
             const position = button.getAttribute('data-player-position');
             const dorsal = button.getAttribute('data-player-dorsal');
-            
+
             document.getElementById('editPlayerModalLabel').textContent = `Editar a: ${name}`;
             editPlayerIdInput.value = id;
             document.getElementById('editPlayerName').value = name;
@@ -255,28 +255,28 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Manejar Envío del Formulario del Modal (PUT /api/player/:playerId)
-if (formEditarJugador) {
+    if (formEditarJugador) {
         formEditarJugador.addEventListener('submit', async (e) => {
             e.preventDefault();
 
             // CLAVE: Limpiar mensajes del modal antes de enviar
             if (modalPlayerMessage) {
-                 modalPlayerMessage.textContent = '';
-                 modalPlayerMessage.className = '';
+                modalPlayerMessage.textContent = '';
+                modalPlayerMessage.className = '';
             }
-            
+
             const playerId = editPlayerIdInput.value;
             const newName = document.getElementById('editPlayerName').value.trim();
             const newPosition = document.getElementById('editPlayerPosition').value;
             const newDorsal = document.getElementById('editPlayerDorsal').value.trim();
-            
+
             // Validaciones de dorsal (Recomendado: Añadir validación aquí también)
             const dorsalValue = newDorsal ? parseInt(newDorsal) : null;
-            
+
             const updatedData = {
                 name: newName,
                 position: newPosition,
-                number: dorsalValue, 
+                number: dorsalValue,
                 teamId: teamId
             };
 
@@ -286,24 +286,24 @@ if (formEditarJugador) {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(updatedData)
                 });
-                
+
                 const result = await response.json();
-                
+
                 if (response.ok) {
                     // ÉXITO: Cerrar el modal y mostrar mensaje en la pantalla principal
                     const modalInstance = bootstrap.Modal.getInstance(editPlayerModalElement);
                     if (modalInstance) modalInstance.hide();
-                    
+
                     playerMessage.textContent = `Jugador "${newName}" actualizado con éxito.`; // Mensaje de éxito en la pantalla principal
                     playerMessage.className = "alert alert-success mt-3";
-                    loadTeamData(); 
+                    loadTeamData();
                 } else {
                     // ERROR: Mantener el modal abierto y mostrar el mensaje de error DENTRO DEL MODAL
                     modalPlayerMessage.textContent = result.mensaje || "Error al actualizar jugador."; // ⬅️ Mensaje de error en el MODAL
                     modalPlayerMessage.className = "alert alert-danger mt-3";
-                    
+
                     // Limpiar el mensaje de la pantalla principal si acaso tenía algo
-                    if (playerMessage) playerMessage.textContent = ''; 
+                    if (playerMessage) playerMessage.textContent = '';
                 }
 
             } catch (error) {
@@ -325,6 +325,29 @@ if (formEditarJugador) {
             }
         });
     }
+
+    // Eliminar Equipo (DELETE /api/team/:teamId)
+    window.deleteTeam = async function () {
+        try {
+            const response = await fetch(`${API_TEAM_URL}/${teamId}`, {
+                method: 'DELETE'
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                alert("Equipo eliminado correctamente. Serás redirigido al inicio.");
+                // Limpiar sesión
+                localStorage.clear();
+                window.location.href = "Login.html";
+            } else {
+                alert(`Error al eliminar: ${result.mensaje}`);
+            }
+        } catch (error) {
+            console.error("Error al eliminar equipo:", error);
+            alert("Error de conexión al eliminar el equipo.");
+        }
+    };
 
     // Inicio
     loadTeamData();

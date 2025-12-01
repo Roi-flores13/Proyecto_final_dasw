@@ -9,7 +9,7 @@ const multer = require('multer');
 const teamController = require("../controllers/team_controller");
 
 // Configuración de almacenamiento
-const storage = multer.memoryStorage(); 
+const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 // Ruta para crear un equipo
@@ -23,6 +23,9 @@ router.get("/:teamId", teamController.getTeamById); // GET /api/team/:teamId
 
 // Ruta para actualizar un equipo por su ID
 router.put("/:teamId", upload.single('team_file'), teamController.updateTeam); // PUT /api/team/:teamId
+
+// Ruta para eliminar un equipo
+router.delete("/:teamId", teamController.deleteTeam); // DELETE /api/team/:teamId
 
 // Exportamos el router
 module.exports = router;

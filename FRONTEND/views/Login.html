@@ -1,346 +1,313 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acceso y Registro de Liga</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-          rel="stylesheet"
-          xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
-          crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
         body {
-            font-family: 'Inter', sans-serif;          /* Usamos una fuente limpia */
-            background: linear-gradient(90deg,#270202, #760909); /* Fondo degradado */
-            min-height: 100vh;                         /* Altura mínima toda la pantalla */
-            display: flex;                             /* Usamos flexbox para centrar */
-            align-items: center;                       /* Centramos verticalmente */
-            justify-content: center;                   /* Centramos horizontalmente */
+            font-family: 'Inter', sans-serif;
+            /* Usamos una fuente limpia */
+            background: linear-gradient(90deg, #270202, #760909);
+            /* Fondo degradado */
+            min-height: 100vh;
+            /* Altura mínima toda la pantalla */
+            display: flex;
+            /* Usamos flexbox para centrar */
+            align-items: center;
+            /* Centramos verticalmente */
+            justify-content: center;
+            /* Centramos horizontalmente */
         }
+
         /* Estilo para el modal oscuro */
         .modal-content-dark {
             background-color: #270202;
             color: white;
             border: 1px solid #760909;
         }
+
         .hidden {
             display: none;
         }
     </style>
 </head>
+
 <body>
 
-<div class="w-full max-w-md">
-    <div class="bg-[#270202] text-white p-10 sm:p-15 rounded-xl">
+    <div class="w-full max-w-md">
+        <div class="bg-[#270202] text-white p-10 sm:p-15 rounded-xl">
 
-        <form id="form-login" class="text-center">
-            <h3 class="text-3xl font-bold mb-6">Iniciar Sesión</h3>
+            <form id="form-login" class="text-center">
+                <h3 class="text-3xl font-bold mb-6">Iniciar Sesión</h3>
 
-            <div class="mb-4 w-full text-left">
-                <label for="email" class="block text-sm font-medium mb-1">Correo electrónico</label>
-                <input type="email"
-                       id="email"
-                       name="email"
-                       class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg"
-                       required>
-            </div>
+                <div class="mb-4 w-full text-left">
+                    <label for="email" class="block text-sm font-medium mb-1">Correo electrónico</label>
+                    <input type="email" id="email" name="email"
+                        class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required>
+                </div>
 
-            <div class="mb-4 w-full text-left">
-                <label for="password" class="block text-sm font-medium mb-1">Contraseña</label>
-                <input type="password"
-                       id="password"
-                       name="password"
-                       class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg"
-                       required
-                       minlength="8">
-            </div>
+                <div class="mb-4 w-full text-left">
+                    <label for="password" class="block text-sm font-medium mb-1">Contraseña</label>
+                    <input type="password" id="password" name="password"
+                        class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required minlength="8">
+                </div>
 
-            <div class="mb-6 w-full text-left">
-                <label for="liga_login" class="block text-sm font-medium mb-1">Código de Liga</label>
-                <input type="text"
-                       id="liga_login"
-                       name="liga_login"
-                       class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg">
-            </div>
+                <div class="mb-6 w-full text-left">
+                    <label for="liga_login" class="block text-sm font-medium mb-1">Código de Liga</label>
+                    <input type="text" id="liga_login" name="liga_login"
+                        class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg">
+                </div>
 
-            <button type="submit"
-                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg">
-                Ingresar
-            </button>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg">
+                    Ingresar
+                </button>
 
-            <div id="mensaje" class="mt-3"></div>
+                <div id="mensaje" class="mt-3"></div>
 
-            <div class="mt-6 pt-4 border-t border-gray-200">
-                <p class="text-gray-200 mb-3">¿Eres nuevo por aquí?</p>
-                <button type="button"
-                        class="btn btn-outline-warning w-2/3 fw-bold py-3"
+                <div class="mt-6 pt-4 border-t border-gray-200">
+                    <p class="text-gray-200 mb-3">¿Eres nuevo por aquí?</p>
+                    <button type="button" class="btn btn-outline-warning w-2/3 fw-bold py-3"
                         onclick="toggleForms('form-login', 'form-register')">
-                    Registrarme
-                </button>
-            </div>
+                        Registrarme
+                    </button>
+                </div>
 
-            <div class="mt-3">
-                <button type="button"
-                        class="btn btn-outline-danger w-2/3 fw-bold py-3"
+                <div class="mt-3">
+                    <button type="button" class="btn btn-outline-danger w-2/3 fw-bold py-3"
                         onclick="toggleForms('form-login', 'form-create-league')">
-                    Crear Liga
-                </button>
-            </div>
+                        Crear Liga
+                    </button>
+                </div>
 
-            <div class="mt-3">
-                <button type="button"
-                        class="btn btn-outline-info w-2/3 fw-bold py-3"
-                        data-bs-toggle="modal" 
+                <div class="mt-3">
+                    <button type="button" class="btn btn-outline-info w-2/3 fw-bold py-3" data-bs-toggle="modal"
                         data-bs-target="#modalVisitarLiga">
-                    Visitar Liga
-                </button>
-            </div>
-        </form>
-
-        <form id="form-register" class="text-center hidden">
-            <h3 class="text-3xl font-bold mb-6">Registro</h3>
-
-            <div class="mb-4 w-full text-left">
-                <label for="nombre_capitan" class="block text-sm font-medium mb-1">Nombre de Usuario</label>
-                <input type="text"
-                    id="nombre_capitan"
-                    name="nombre_capitan"
-                    class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg"
-                    required>
-            </div>
-
-            <div class="mb-4 w-full text-left">
-                <label for="email_capitan" class="block text-sm font-medium mb-1">Email</label>
-                <input type="email"
-                    id="email_capitan"
-                    name="email_capitan"
-                    class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg"
-                    required>
-            </div>
-
-            <div class="mb-4 w-full text-left">
-                <label for="password_capitan" class="block text-sm font-medium mb-1">Contraseña</label>
-                <input type="password"
-                    id="password_capitan"
-                    name="password_capitan"
-                    class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg"
-                    required
-                    minlength="8">
-            </div>
-
-            <div class="mb-6 w-full text-left">
-                <label for="confirm_password_capitan" class="block text-sm font-medium mb-1">Confirmar Contraseña</label>
-                <input type="password"
-                    id="confirm_password_capitan"
-                    name="confirm_password_capitan"
-                    class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg"
-                    required
-                    minlength="6">
-                <div id="differPasswords"
-                    class="text-xs text-red-500 mt-1 text-left hidden">
-                    Las contraseñas no coinciden.
-                </div>
-            </div>
-            
-            <div class="mb-6 w-full text-left">
-                <label for="rol_register" class="block text-sm font-medium mb-1">Tipo de Usuario</label>
-                <select id="rol_register"
-                        name="rol_register"
-                        class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg"
-                        required>
-                    <option value="capitan" selected>Capitán (Administrar Equipo)</option>
-                    <option value="admin">Administrador (Crear Liga)</option>
-                </select>
-            </div>
-            
-            <div id="mensaje-registro" class="mt-3"></div> 
-
-            <button type="submit"
-                    class="w-2/3 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg">
-                Crear Cuenta
-            </button>
-
-            <div class="mt-6 pt-4 border-t border-gray-200">
-                <button type="button"
-                        class="w-2/3 bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 rounded-lg"
-                        onclick="toggleForms('form-register', 'form-login')">
-                    Volver a Iniciar Sesión
-                </button>
-            </div>
-        </form>
-
-        <form id="form-create-league" class="text-center hidden">
-            <h3 class="text-3xl font-bold mb-6">Crear Nueva Liga</h3>
-            
-            <p class="text-xs text-center text-gray-400 mb-4">
-                Confirma tus credenciales de administrador para crear la liga.
-            </p>
-            <div class="mb-4 w-full text-left">
-                <label for="admin_email" class="block text-sm font-medium mb-1">Email</label>
-                <input type="email" id="admin_email" name="admin_email" class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required>
-            </div>
-            <div class="mb-4 w-full text-left">
-                <label for="admin_password" class="block text-sm font-medium mb-1">Contraseña</label>
-                <input type="password" id="admin_password" name="admin_password" class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required>
-            </div>
-            <div class="mb-4 w-full text-left">
-                <label for="nombre_liga" class="block text-sm font-medium mb-1">Nombre de la Liga</label>
-                <input type="text"
-                       id="nombre_liga"
-                       name="nombre_liga"
-                       class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg"
-                       required>
-            </div>
-
-            <div class="mb-4 w-full text-left">
-                <label for="equipos_max" class="block text-sm font-medium mb-1">Máximo de Equipos</label>
-                <input type="number"
-                       id="equipos_max"
-                       name="equipos_max"
-                       class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg"
-                       required
-                       min="2"
-                       max="32"
-                       value="8">
-                <div class="text-xs text-gray-300 mt-1 text-left">Mínimo 4, Máximo 16.</div>
-            </div>
-
-            <div class="mb-4 w-full text-left">
-                <label for="codigo_liga" class="block text-sm font-medium mb-1">
-                    Código de Liga (Para compartir)
-                </label>
-                <input type="text"
-                       id="codigo_liga"
-                       name="codigo_liga"
-                       class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg"
-                       required
-                       minlength="6"
-                       maxlength="10">
-            </div>
-
-            <div class="mb-6 w-full text-left">
-                <label for="fecha_inicio" class="block text-sm font-medium mb-1">Fecha de Inicio Estimada</label>
-                <input type="date"
-                       id="fecha_inicio"
-                       name="fecha_inicio"
-                       class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg"
-                       required>
-            </div>
-            
-            <div id="mensaje-crear-liga" class="mt-3"></div>
-
-            <button type="submit"
-                    class="w-2/3 bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-lg">
-                Crear Liga
-            </button>
-
-            <div class="mt-6 pt-4 border-t border-gray-200">
-                <button type="button"
-                        class="w-2/3 bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 rounded-lg"
-                        onclick="toggleForms('form-create-league', 'form-login')">
-                    Volver a Iniciar Sesión
-                </button>
-            </div>
-        </form>
-
-    </div>
-</div>
-
-<div class="modal fade" id="modalVisitarLiga" tabindex="-1" aria-labelledby="modalVisitarLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content modal-content-dark">
-            <div class="modal-header border-bottom border-gray-700">
-                <h5 class="modal-title fs-5" id="modalVisitarLabel">Visitar Liga</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-center">
-                <p class="mb-4 text-gray-300">Ingresa el código que te proporcionó el administrador para ver la tabla y resultados.</p>
-                
-                <input type="text" 
-                       id="input-codigo-liga" 
-                       class="w-full bg-white text-gray-900 px-4 py-3 rounded-lg text-center font-bold text-lg" 
-                       placeholder="Ej: LIGA-12345">
-
-                       <div id="modalVisitanteMessage" class="mt-3 text-sm"></div>
-            </div>
-            <div class="modal-footer border-top border-gray-700">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" id="btn-buscar-liga" class="btn btn-info fw-bold text-white">Ir a la Liga</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="firstLoginLeagueModal" tabindex="-1" aria-labelledby="firstLoginLeagueLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content modal-content-dark">
-            <div class="modal-header border-bottom border-gray-700">
-                <h5 class="modal-title fs-5" id="firstLoginLeagueLabel">
-                    <i class="bi bi-shield-plus"></i> Únete a tu Liga
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form id="formModalLiga" novalidate>
-                <div class="modal-body text-center">
-                    <p class="mb-4 text-gray-300">
-                        ¡Bienvenido! Ingresa el código de la Liga a la que te unirás como Capitán.
-                    </p>
-                    
-                    <input type="text" 
-                           id="input-codigo-liga-modal" 
-                           class="w-full bg-white text-gray-900 px-4 py-3 rounded-lg text-center font-bold text-lg" 
-                           placeholder="CÓDIGO-LIGA" 
-                           required>
-
-                    <div id="modalLeagueMessage" class="mt-3 text-sm"></div>
-                    
-                </div>
-                <div class="modal-footer border-top border-gray-700">
-                    <button type="submit" class="btn btn-warning fw-bold">
-                        Unirme a la Liga <i class="bi bi-arrow-right"></i>
+                        Visitar Liga
                     </button>
                 </div>
             </form>
+
+            <form id="form-register" class="text-center hidden">
+                <h3 class="text-3xl font-bold mb-6">Registro</h3>
+
+                <div class="mb-4 w-full text-left">
+                    <label for="nombre_capitan" class="block text-sm font-medium mb-1">Nombre de Usuario</label>
+                    <input type="text" id="nombre_capitan" name="nombre_capitan"
+                        class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required>
+                </div>
+
+                <div class="mb-4 w-full text-left">
+                    <label for="email_capitan" class="block text-sm font-medium mb-1">Email</label>
+                    <input type="email" id="email_capitan" name="email_capitan"
+                        class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required>
+                </div>
+
+                <div class="mb-4 w-full text-left">
+                    <label for="password_capitan" class="block text-sm font-medium mb-1">Contraseña</label>
+                    <input type="password" id="password_capitan" name="password_capitan"
+                        class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required minlength="8">
+                </div>
+
+                <div class="mb-6 w-full text-left">
+                    <label for="confirm_password_capitan" class="block text-sm font-medium mb-1">Confirmar
+                        Contraseña</label>
+                    <input type="password" id="confirm_password_capitan" name="confirm_password_capitan"
+                        class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required minlength="6">
+                    <div id="differPasswords" class="text-xs text-red-500 mt-1 text-left hidden">
+                        Las contraseñas no coinciden.
+                    </div>
+                </div>
+
+                <div class="mb-6 w-full text-left">
+                    <label for="rol_register" class="block text-sm font-medium mb-1">Tipo de Usuario</label>
+                    <select id="rol_register" name="rol_register"
+                        class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required>
+                        <option value="capitan" selected>Capitán (Administrar Equipo)</option>
+                        <option value="admin">Administrador (Crear Liga)</option>
+                    </select>
+                </div>
+
+                <div id="mensaje-registro" class="mt-3"></div>
+
+                <button type="submit"
+                    class="w-2/3 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg">
+                    Crear Cuenta
+                </button>
+
+                <div class="mt-6 pt-4 border-t border-gray-200">
+                    <button type="button"
+                        class="w-2/3 bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 rounded-lg"
+                        onclick="toggleForms('form-register', 'form-login')">
+                        Volver a Iniciar Sesión
+                    </button>
+                </div>
+            </form>
+
+            <form id="form-create-league" class="text-center hidden">
+                <h3 class="text-3xl font-bold mb-6">Crear Nueva Liga</h3>
+
+                <p class="text-xs text-center text-gray-400 mb-4">
+                    Confirma tus credenciales de administrador para crear la liga.
+                </p>
+                <div class="mb-4 w-full text-left">
+                    <label for="admin_email" class="block text-sm font-medium mb-1">Email</label>
+                    <input type="email" id="admin_email" name="admin_email"
+                        class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required>
+                </div>
+                <div class="mb-4 w-full text-left">
+                    <label for="admin_password" class="block text-sm font-medium mb-1">Contraseña</label>
+                    <input type="password" id="admin_password" name="admin_password"
+                        class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required>
+                </div>
+                <div class="mb-4 w-full text-left">
+                    <label for="nombre_liga" class="block text-sm font-medium mb-1">Nombre de la Liga</label>
+                    <input type="text" id="nombre_liga" name="nombre_liga"
+                        class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required>
+                </div>
+
+                <div class="mb-4 w-full text-left">
+                    <label for="equipos_max" class="block text-sm font-medium mb-1">Máximo de Equipos</label>
+                    <input type="number" id="equipos_max" name="equipos_max"
+                        class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required min="2" max="32" value="8">
+                    <div class="text-xs text-gray-300 mt-1 text-left">Mínimo 4, Máximo 16.</div>
+                </div>
+
+                <div class="mb-4 w-full text-left">
+                    <label for="codigo_liga" class="block text-sm font-medium mb-1">
+                        Código de Liga (Para compartir)
+                    </label>
+                    <input type="text" id="codigo_liga" name="codigo_liga"
+                        class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required minlength="6"
+                        maxlength="10">
+                </div>
+
+                <div class="mb-6 w-full text-left">
+                    <label for="fecha_inicio" class="block text-sm font-medium mb-1">Fecha de Inicio Estimada</label>
+                    <input type="date" id="fecha_inicio" name="fecha_inicio"
+                        class="w-full bg-white text-gray-900 px-4 py-2 rounded-lg" required>
+                </div>
+
+                <div id="mensaje-crear-liga" class="mt-3"></div>
+
+                <button type="submit"
+                    class="w-2/3 bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-lg">
+                    Crear Liga
+                </button>
+
+                <div class="mt-6 pt-4 border-t border-gray-200">
+                    <button type="button"
+                        class="w-2/3 bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 rounded-lg"
+                        onclick="toggleForms('form-create-league', 'form-login')">
+                        Volver a Iniciar Sesión
+                    </button>
+                </div>
+            </form>
+
         </div>
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
-        xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
+    <div class="modal fade" id="modalVisitarLiga" tabindex="-1" aria-labelledby="modalVisitarLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-content-dark">
+                <div class="modal-header border-bottom border-gray-700">
+                    <h5 class="modal-title fs-5" id="modalVisitarLabel">Visitar Liga</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p class="mb-4 text-gray-300">Ingresa el código que te proporcionó el administrador para ver la
+                        tabla y resultados.</p>
+
+                    <input type="text" id="input-codigo-liga"
+                        class="w-full bg-white text-gray-900 px-4 py-3 rounded-lg text-center font-bold text-lg"
+                        placeholder="Ej: LIGA-12345">
+
+                    <div id="modalVisitanteMessage" class="mt-3 text-sm"></div>
+                </div>
+                <div class="modal-footer border-top border-gray-700">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" id="btn-buscar-liga" class="btn btn-info fw-bold text-white">Ir a la
+                        Liga</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="firstLoginLeagueModal" tabindex="-1" aria-labelledby="firstLoginLeagueLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-content-dark">
+                <div class="modal-header border-bottom border-gray-700">
+                    <h5 class="modal-title fs-5" id="firstLoginLeagueLabel">
+                        <i class="bi bi-shield-plus"></i> Únete a tu Liga
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <form id="formModalLiga" novalidate>
+                    <div class="modal-body text-center">
+                        <p class="mb-4 text-gray-300">
+                            ¡Bienvenido! Ingresa el código de la Liga a la que te unirás como Capitán.
+                        </p>
+
+                        <input type="text" id="input-codigo-liga-modal"
+                            class="w-full bg-white text-gray-900 px-4 py-3 rounded-lg text-center font-bold text-lg"
+                            placeholder="CÓDIGO-LIGA" required>
+
+                        <div id="modalLeagueMessage" class="mt-3 text-sm"></div>
+
+                    </div>
+                    <div class="modal-footer border-top border-gray-700">
+                        <button type="submit" class="btn btn-warning fw-bold">
+                            Unirme a la Liga <i class="bi bi-arrow-right"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
 
-<script>
-    function toggleForms(hideId, showId) {
-        // Obtenemos el formulario que vamos a ocultar
-        const formToHide = document.getElementById(hideId);
-        // Obtenemos el formulario que vamos a mostrar
-        const formToShow = document.getElementById(showId);
+    <script>
+        function toggleForms(hideId, showId) {
+            // Obtenemos el formulario que vamos a ocultar
+            const formToHide = document.getElementById(hideId);
+            // Obtenemos el formulario que vamos a mostrar
+            const formToShow = document.getElementById(showId);
 
-        // Si encontramos el formulario a ocultar, le agregamos la clase hidden
-        if (formToHide) {
-            formToHide.classList.add('hidden');
-        }
+            // Si encontramos el formulario a ocultar, le agregamos la clase hidden
+            if (formToHide) {
+                formToHide.classList.add('hidden');
+            }
 
-        // Si encontramos el formulario a mostrar, le quitamos la clase hidden
-        if (formToShow) {
-            formToShow.classList.remove('hidden');
-        }
+            // Si encontramos el formulario a mostrar, le quitamos la clase hidden
+            if (formToShow) {
+                formToShow.classList.remove('hidden');
+            }
 
-        // Si estamos ocultando el formulario de registro, escondemos también el mensaje de contraseñas distintas
-        if (hideId === 'form-register') {
-            const differPasswords = document.getElementById('differPasswords');
-            if (differPasswords) {
-                differPasswords.classList.add('hidden');
+            // Si estamos ocultando el formulario de registro, escondemos también el mensaje de contraseñas distintas
+            if (hideId === 'form-register') {
+                const differPasswords = document.getElementById('differPasswords');
+                if (differPasswords) {
+                    differPasswords.classList.add('hidden');
+                }
             }
         }
-    }
-</script>
+    </script>
 
-<script src="../js/login.js"></script>
-<script src="../js/home_liga.js"></script> 
+    <script src="../js/login.js"></script>
+
 </body>
+
 </html>
