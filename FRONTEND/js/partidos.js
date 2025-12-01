@@ -79,36 +79,25 @@ document.addEventListener("DOMContentLoaded", async () => {
                 ? `<img src="${match.awayLogo}" alt="Escudo ${match.away}" class="rounded-circle ms-2" style="width:32px;height:32px;object-fit:cover;">`
                 : "";
 
-            // Creamos el elemento HTML (usamos div y manejamos el click manualmente para evitar conflictos)
+            // Creamos el elemento HTML contenedor
             const item = document.createElement('div');
-            item.className = "list-group-item list-group-item-action d-flex justify-content-between align-items-center mb-2 shadow-sm border-0 rounded";
-            item.style.cursor = "pointer"; // Para que parezca un link
-
-            // Agregamos un evento click para navegar al detalle
-            item.addEventListener("click", (e) => {
-                // Si el click vino del botón de eliminar (o su ícono), NO navegamos
-                if (e.target.closest('.btn-delete-match')) {
-                    return;
-                }
-
-                localStorage.setItem("matchId", match.id);
-                window.location.href = "Partido_detalle.html";
-            });
+            item.className = "list-group-item d-flex justify-content-between align-items-center mb-2 shadow-sm border-0 rounded";
+            // Quitamos el cursor pointer del contenedor principal porque ya no es todo clickeable
+            // item.style.cursor = "pointer"; 
 
             // Botón de eliminar (Solo Admin)
             const userRole = localStorage.getItem("userRole");
             let deleteBtnHtml = "";
             if (userRole === 'admin') {
-                // Agregamos la clase 'btn-delete-match' para identificarlo en el listener del padre
                 deleteBtnHtml = `
-                    <button class="btn btn-outline-danger btn-sm ms-3 btn-delete-match" onclick="deleteMatch('${match.id}', event)" title="Eliminar Partido">
+                    <button type="button" class="btn btn-outline-danger btn-sm ms-3 btn-delete-match" title="Eliminar Partido">
                         <i class="bi bi-trash"></i>
                     </button>
                 `;
             }
 
             item.innerHTML = `
-                <div class="flex-grow-1">
+                <div class="flex-grow-1 match-content" style="cursor: pointer;">
                     <div class="mb-1 d-flex align-items-center flex-wrap">
                         <div class="d-flex align-items-center me-2">
                             ${homeLogoHtml}
@@ -136,6 +125,28 @@ document.addEventListener("DOMContentLoaded", async () => {
             `;
 
             listContainer.appendChild(item);
+
+            // Agregamos el evento de navegación SOLO al contenido del partido
+            const contentDiv = item.querySelector('.match-content');
+            if (contentDiv) {
+                contentDiv.addEventListener("click", () => {
+                    localStorage.setItem("matchId", match.id);
+                    window.location.href = "Partido_detalle.html";
+                });
+            }
+
+            // Si es admin, agregamos el listener al botón de eliminar
+            if (userRole === 'admin') {
+                const deleteBtn = item.querySelector('.btn-delete-match');
+                if (deleteBtn) {
+                    deleteBtn.addEventListener('click', (e) => {
+                        // Ya no necesitamos stopPropagation porque están en contenedores hermanos/separados lógicamente
+                        // pero por seguridad lo dejamos para evitar cualquier bubbling raro
+                        e.stopPropagation();
+                        deleteMatch(match.id, e);
+                    });
+                }
+            }
         });
     }
 
@@ -289,35 +300,57 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
 
     // Función global para eliminar partido
-    window.deleteMatch = async function (matchId, event) {
-        // Evitar que el click se propague al item (que redirige al detalle)
+    // Variable para guardar el ID del partido a eliminar
+    let matchIdToDelete = null;
+
+    // Inicializar el modal de eliminación
+    let deleteModalInstance = null;
+
+    // Función global para abrir el modal de eliminación
+    window.deleteMatch = function (matchId, event) {
+        // Evitar que el click se propague al item
         if (event) {
             event.stopPropagation();
-            event.preventDefault(); // IMPORTANTE: Evitar que el <a> navegue
+            event.preventDefault();
         }
 
-        console.log("Intentando eliminar partido:", matchId);
+        matchIdToDelete = matchId;
 
-        if (!confirm("¿Estás seguro de eliminar este partido?")) return;
-
-        try {
-            const response = await fetch(`http://localhost:3000/api/match/${matchId}`, {
-                method: "DELETE"
-            });
-
-            const result = await response.json();
-            console.log("Respuesta eliminar:", result);
-
-            if (response.ok) {
-                alert("Partido eliminado correctamente.");
-                location.reload();
-            } else {
-                alert(`Error al eliminar el partido: ${result.mensaje}`);
-            }
-
-        } catch (error) {
-            console.error("Error al eliminar partido:", error);
-            alert("Error de conexión al eliminar partido.");
+        const modalEl = document.getElementById('deleteMatchModal');
+        if (!deleteModalInstance) {
+            deleteModalInstance = new bootstrap.Modal(modalEl);
         }
+        deleteModalInstance.show();
     };
+
+    // Event listener para el botón de confirmar en el modal
+    const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+    if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener("click", async () => {
+            if (!matchIdToDelete) return;
+
+            try {
+                const response = await fetch(`http://localhost:3000/api/match/${matchIdToDelete}`, {
+                    method: "DELETE"
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // Ocultar modal
+                    if (deleteModalInstance) deleteModalInstance.hide();
+
+                    // Mostrar feedback visual o recargar
+                    alert("Partido eliminado correctamente.");
+                    location.reload();
+                } else {
+                    alert(`Error al eliminar el partido: ${result.mensaje}`);
+                }
+
+            } catch (error) {
+                console.error("Error al eliminar partido:", error);
+                alert("Error de conexión al eliminar partido.");
+            }
+        });
+    }
 });
