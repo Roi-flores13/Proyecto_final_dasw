@@ -21,5 +21,11 @@ router.get("/:leagueId/standings", leagueController.getStandings); // Cuando lle
 router.get("/find/:id", leagueController.getLeagueById) // Cuando llegue un GET a /api/league/find/:id usamos getLeagueById
 
 
+// Ruta para actualizar una liga
+router.put("/:id", leagueController.updateLeague);
+
+// Ruta para eliminar una liga
+router.delete("/:id", leagueController.deleteLeague);
+
 // Exportamos el router para que server.js pueda usar estas rutas
 module.exports = router; // Dejamos disponible el router para el resto del proyecto

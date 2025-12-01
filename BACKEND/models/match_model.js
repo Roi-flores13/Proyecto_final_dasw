@@ -27,6 +27,19 @@ const matchSchema = new mongoose.Schema(
             enum: ["pending", "jugado"],              // Permitimos estos valores
             default: "pending"                        // Valor por defecto
         },
+        verificationStatus: { // Estado de verificación del resultado
+            type: String,
+            enum: ['pending', 'verified', 'disputed'],
+            default: 'pending'
+        },
+        home_verified: {
+            type: Boolean,
+            default: false
+        },
+        away_verified: {
+            type: Boolean,
+            default: false
+        },
         home_team: { // Equipo local
             type: mongoose.Schema.Types.ObjectId, // ObjectId del equipo
             ref: "Team",                          // Referencia al modelo Team

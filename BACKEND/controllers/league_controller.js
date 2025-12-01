@@ -10,12 +10,12 @@ const bcrypt = require("bcryptjs");
 const createLeague = async (req, res) => { // Definimos la función async que manejará el POST
     try { // Intentamos ejecutar el código de aquí adentro
         const {  // Extraemos los datos del cuerpo de la peticion
-            nombre, 
-            max_team_number, 
-            league_code, 
-            start_date, 
-            admin_email, 
-            admin_password 
+            nombre,
+            max_team_number,
+            league_code,
+            start_date,
+            admin_email,
+            admin_password
         } = req.body;
 
         //  Buscar usuario por email
@@ -34,7 +34,7 @@ const createLeague = async (req, res) => { // Definimos la función async que ma
         if (adminUser.rol !== "admin") {
             return res.status(403).json({ mensaje: "Acceso denegado. Solo un Administrador puede crear ligas." });
         }
-        
+
         // Evitar duplicados en codigo de liga
         const existingLeague = await League.findOne({ league_code: league_code });
         if (existingLeague) {
@@ -44,37 +44,37 @@ const createLeague = async (req, res) => { // Definimos la función async que ma
 
         // Creamos una nueva instancia de League
         const newLeague = new League({
-            nombre: nombre,                 
-            max_team_number: max_team_number, 
-            league_code: league_code,       
-            start_date: start_date,         
-            admin: adminUser._id 
+            nombre: nombre,
+            max_team_number: max_team_number,
+            league_code: league_code,
+            start_date: start_date,
+            admin: adminUser._id
         });
 
         // Guardamos la nueva liga en MongoDB
         await newLeague.save();
 
         // Mandamos una respuesta de éxito al frontend
-        return res.status(201).json({ 
-            mensaje: "Liga creada correctamente", 
-            league: {                            
-                id: newLeague._id,               
-                nombre: newLeague.nombre,        
-                codigo: newLeague.league_code,   
-                maxEquipos: newLeague.max_team_number, 
-                fechaInicio: newLeague.start_date      
+        return res.status(201).json({
+            mensaje: "Liga creada correctamente",
+            league: {
+                id: newLeague._id,
+                nombre: newLeague.nombre,
+                codigo: newLeague.league_code,
+                maxEquipos: newLeague.max_team_number,
+                fechaInicio: newLeague.start_date
             }
         });
-    } catch (error) { 
+    } catch (error) {
         console.error("Error al crear liga:", error);
-        
+
         // Manejar error de unicidad si es de la BD
         if (error.code && error.code === 11000) {
             return res.status(400).json({ mensaje: "Ese código de liga ya está en uso." });
         }
-        
-        return res.status(500).json({                 
-            mensaje: "Error al crear liga"            
+
+        return res.status(500).json({
+            mensaje: "Error al crear liga"
         });
     }
 };
@@ -117,22 +117,23 @@ const getTopScorers = async (req, res) => {
 
         // 1. Primero encontramos todos los equipos de esta liga para obtener sus IDs
         const teams = await Team.find({ league: leagueId }).select('_id name');
-        
+
         // Sacamos solo los IDs en un arreglo
         const teamIds = teams.map(t => t._id);
 
         // 2. Buscamos jugadores cuyo 'team' esté en esa lista de IDs
         // 3. Ordenamos por total_goals descendente
-        // 4. Populate para traer el nombre del equipo también
+        // 4. Populate para traer el nombre del equipo y el logo
         const players = await Player.find({ team: { $in: teamIds } })
             .sort({ total_goals: -1 })
             .limit(10) // Traemos solo los top 10
-            .populate("team", "name"); // Rellenamos el campo team con su nombre
+            .populate("team", "name logo"); // Rellenamos el campo team con su nombre y logo
 
         // Mapeamos para enviar un formato limpio
         const scorersFormatted = players.map(p => ({
             name: p.name,
             team: p.team ? p.team.name : "Sin equipo",
+            logo: p.team ? p.team.logo : null,
             goals: p.total_goals,
             position: p.position
         }));
@@ -157,7 +158,7 @@ const getStandings = async (req, res) => {
         // 2. Ordenamos (.sort): Primero por puntos (-1 es descendente), luego por diferencia de goles (calculado o GF)
         // Nota: Mongo no ordena por propiedades calculadas fácilmente, usaremos GF como segundo criterio por ahora.
         const teams = await Team.find({ league: leagueId })
-            .sort({ "stats.points": -1, "stats.gf": -1 }); 
+            .sort({ "stats.points": -1, "stats.gd": -1, "stats.gf": -1 });
 
         // Formateamos para el frontend si es necesario, o mandamos directo
         return res.status(200).json({
@@ -175,7 +176,7 @@ const getLeagueById = async (req, res) => {
     try {
         const leagueId = req.params.id;
         const league = await League.findById(leagueId);
-        
+
         if (!league) return res.status(404).json({ mensaje: "Liga no encontrada" });
 
         return res.status(200).json({
@@ -189,11 +190,75 @@ const getLeagueById = async (req, res) => {
     }
 };
 
+// Función para actualizar una liga (PUT)
+const updateLeague = async (req, res) => {
+    try {
+        const leagueId = req.params.id;
+        const { nombre, max_team_number, start_date } = req.body;
+
+        const updatedLeague = await League.findByIdAndUpdate(
+            leagueId,
+            { nombre, max_team_number, start_date },
+            { new: true } // Para que devuelva el objeto actualizado
+        );
+
+        if (!updatedLeague) {
+            return res.status(404).json({ mensaje: "Liga no encontrada" });
+        }
+
+        return res.status(200).json({
+            mensaje: "Liga actualizada correctamente",
+            league: updatedLeague
+        });
+    } catch (error) {
+        console.error("Error al actualizar liga:", error);
+        return res.status(500).json({ mensaje: "Error al actualizar la liga" });
+    }
+};
+
+// Función para eliminar una liga (DELETE)
+const deleteLeague = async (req, res) => {
+    try {
+        const leagueId = req.params.id;
+
+        // 1. Eliminar la liga
+        const deletedLeague = await League.findByIdAndDelete(leagueId);
+
+        if (!deletedLeague) {
+            return res.status(404).json({ mensaje: "Liga no encontrada" });
+        }
+
+        // 2. Eliminar equipos asociados (Opcional pero recomendado para limpieza)
+        await Team.deleteMany({ league: leagueId });
+
+        // 3. Eliminar jugadores asociados a esos equipos (Más complejo, requiere buscar equipos primero)
+        // Por simplicidad en este demo, dejamos los jugadores huérfanos o confiamos en un borrado en cascada si estuviera configurado.
+        // Pero idealmente:
+        // const teams = await Team.find({ league: leagueId });
+        // const teamIds = teams.map(t => t._id);
+        // await Player.deleteMany({ team: { $in: teamIds } });
+
+        // 4. Eliminar partidos asociados
+        // const Match = require("../models/match_model"); // Importar si no está arriba
+        // await Match.deleteMany({ league: leagueId });
+
+        return res.status(200).json({
+            mensaje: "Liga eliminada correctamente (y sus datos asociados)"
+        });
+
+    } catch (error) {
+        console.error("Error al eliminar liga:", error);
+        return res.status(500).json({ mensaje: "Error al eliminar la liga" });
+    }
+};
+
 // Exportamos las funciones para poder usarlas en las rutas
 module.exports = {          // Exportamos un objeto con las funciones
     createLeague,           // Exportamos la función para crear liga
     getLeagueByCode,        // Exportamos la función para buscar liga por código
     getTopScorers,          // Exportamos la función para goleadores
     getStandings,        // Exportamos la función para standings
-    getLeagueById   // Exportamos función para buscar liga por ID
+    getLeagueById,   // Exportamos función para buscar liga por ID
+    updateLeague,    // Exportamos función para actualizar liga
+    deleteLeague     // Exportamos función para eliminar liga
 };

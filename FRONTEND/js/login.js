@@ -1,6 +1,29 @@
 // Esperamos a que la página cargue para poder acceder a los elementos del HTML
 document.addEventListener("DOMContentLoaded", () => {
 
+    // 0. AUTO-LOGIN: Verificar si ya hay sesión activa
+    const storedUserId = localStorage.getItem("userId");
+    const storedUserRole = localStorage.getItem("userRole");
+    const storedLeagueId = localStorage.getItem("leagueId");
+
+    // Si estamos en Login.html y ya hay usuario, redirigir
+    if (storedUserId && storedUserRole) {
+        // Evitar bucle si algo falla, pero por norma general redirigimos
+        if (storedUserRole === 'admin') {
+            window.location.href = "Admin_liga.html";
+            return;
+        } else if (storedUserRole === 'capitan') {
+            if (storedLeagueId) {
+                window.location.href = "General_view.html";
+                return;
+            } else {
+                // Si es capitán pero no tiene liga, quizás deba quedarse para unirse
+                // O redirigir a una pagina intermedia. Por ahora dejamos que se quede si no tiene liga
+                // para que vea el modal de unirse.
+            }
+        }
+    }
+
     // Obtenemos el formulario de login usando su id
     const formLogin = document.getElementById("form-login");
 
@@ -11,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const formRegister = document.getElementById("form-register");
 
     // OBTENEMOS EL CONTENEDOR EXCLUSIVO PARA EL REGISTRO (Asumiendo id="mensaje-registro" en HTML)
-    const mensajeRegistro = document.getElementById("mensaje-registro"); 
+    const mensajeRegistro = document.getElementById("mensaje-registro");
 
 
     // Si encontramos el formulario de login, le agregamos el listener
@@ -28,17 +51,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Armamos el objeto que mandaremos al backend
             const datos = {
-                email: email,       
-                password: password,   
+                email: email,
+                password: password,
                 codigo_liga: codigoLiga
             };
 
             try {
                 // Mandamos la petición al backend usando fetch
-                const respuesta = await fetch("http://localhost:3000/api/auth/login", {
-                    method: "POST",                                   
-                    headers: { "Content-Type": "application/json" },  
-                    body: JSON.stringify(datos)                       
+                // Mandamos la petición al backend usando fetch
+                const API_URL = window.location.origin.includes('localhost') ? "http://localhost:3000" : window.location.origin;
+                const respuesta = await fetch(`${API_URL}/api/auth/login`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(datos)
                 });
 
                 const resultado = await respuesta.json();
@@ -58,8 +83,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 // Obtenemos informacion del servidor
                 const rol = resultado.usuario.rol;
                 const redirectURL = resultado.usuario.redirectURL;
-                const leagueId = resultado.usuario.leagueId; 
-                const teamId = resultado.usuario.teamId;   
+                const leagueId = resultado.usuario.leagueId;
+                const teamId = resultado.usuario.teamId;
 
                 // Guardamos en localstorage
                 localStorage.setItem("userRole", rol);
@@ -67,18 +92,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 // Manejo de LeagueID
                 if (leagueId) {
-                    localStorage.setItem("leagueId", leagueId); 
+                    localStorage.setItem("leagueId", leagueId);
                 } else {
-                    localStorage.removeItem("leagueId"); 
+                    localStorage.removeItem("leagueId");
                 }
 
                 // Manejo de TeamID
                 if (teamId) {
-                    localStorage.setItem("teamId", teamId); 
+                    localStorage.setItem("teamId", teamId);
                 } else {
-                    localStorage.removeItem("teamId"); 
+                    localStorage.removeItem("teamId");
                 }
-                
+
                 // Usamos la URL de redireccion condicional
                 window.location.href = redirectURL;
 
@@ -128,18 +153,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Armamos el objeto que mandaremos al backend
             const datosRegistro = {
-                nombre: nombre,             
-                email: emailRegistro,       
-                password: passwordRegistro, 
+                nombre: nombre,
+                email: emailRegistro,
+                password: passwordRegistro,
                 rol: rol_seleccionado // Rol seleccionado por el usuario
             };
 
             try {
                 // Mandamos la petición al backend usando fetch
-                const respuesta = await fetch("http://localhost:3000/api/auth/register", {
-                    method: "POST",                                   
-                    headers: { "Content-Type": "application/json" },  
-                    body: JSON.stringify(datosRegistro)               
+                // Mandamos la petición al backend usando fetch
+                const API_URL = window.location.origin.includes('localhost') ? "http://localhost:3000" : window.location.origin;
+                const respuesta = await fetch(`${API_URL}/api/auth/register`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(datosRegistro)
                 });
 
                 const resultado = await respuesta.json();
@@ -166,19 +193,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 // Si el nuevo usuario es 'capitan', mostramos el Modal
                 if (resultado.usuario.rol === 'capitan') {
-                    
+
                     const firstLoginModal = new bootstrap.Modal(document.getElementById('firstLoginLeagueModal'));
-                    
+
                     // Ocultamos el formulario de registro y mostramos el modal
                     if (formRegister) formRegister.classList.add('hidden');
                     firstLoginModal.show();
-                    
+
                     // Detenemos la ejecución aquí, el modal tomará el control.
-                    return; 
-                } 
-                
+                    return;
+                }
+
                 // Si no es capitán o si es Admin, lo redirigimos al login principal para que haga el flujo de "Crear Liga" o "Login"
-                else if (resultado.usuario.rol === 'admin'){
+                else if (resultado.usuario.rol === 'admin') {
 
                     if (typeof toggleForms === "function") {
                         setTimeout(() => {
@@ -200,25 +227,25 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
-    
-// Obtenemos el formulario de crear liga
+
+    // Obtenemos el formulario de crear liga
     const formCreateLeague = document.getElementById("form-create-league");
 
     if (formCreateLeague) {
         formCreateLeague.addEventListener("submit", async (evento) => {
             evento.preventDefault();
-            
+
             // Contenedor de mensajes de este formulario
             const mensajeCrearLiga = document.getElementById("mensaje-crear-liga");
             mensajeCrearLiga.textContent = "";
             mensajeCrearLiga.className = "";
-            
+
             // Obtener los valores de los inputs
             const adminEmail = document.getElementById("admin_email").value;
             const adminPassword = document.getElementById("admin_password").value;
             const nombreLiga = document.getElementById("nombre_liga").value;
             const equiposMax = document.getElementById("equipos_max").value;
-            const codigoLiga = document.getElementById("codigo_liga").value; 
+            const codigoLiga = document.getElementById("codigo_liga").value;
             const fechaInicio = document.getElementById("fecha_inicio").value;
 
             // Armar el objeto con los datos de la liga
@@ -232,12 +259,13 @@ document.addEventListener("DOMContentLoaded", () => {
             };
 
             try {
-                const response = await fetch("http://localhost:3000/api/league/create", {
+                const API_URL = window.location.origin.includes('localhost') ? "http://localhost:3000" : window.location.origin;
+                const response = await fetch(`${API_URL}/api/league/create`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(leagueData)
                 });
-                
+
                 const result = await response.json();
 
                 if (!response.ok) {
@@ -245,16 +273,16 @@ document.addEventListener("DOMContentLoaded", () => {
                     mensajeCrearLiga.className = "alert alert-danger mt-3";
                     return;
                 }
-                
+
                 // Guardamos el ID de la liga que acaba de crear
-                localStorage.setItem("leagueId", result.league.id); 
-                
+                localStorage.setItem("leagueId", result.league.id);
+
                 mensajeCrearLiga.textContent = `Liga '${result.league.codigo}' creada con éxito. Redirigiendo...`;
                 mensajeCrearLiga.className = "alert alert-success mt-3";
-                
+
                 // Redirigir al administrador a la vista de administración
                 setTimeout(() => {
-                    window.location.href = "Admin_liga.html"; 
+                    window.location.href = "Admin_liga.html";
                 }, 1500);
 
             } catch (error) {
@@ -273,12 +301,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (formModalLiga) {
         formModalLiga.addEventListener("submit", async (evento) => {
             evento.preventDefault();
-            
+
             modalLeagueMessage.textContent = "";
             modalLeagueMessage.className = "";
 
             const codigoLiga = inputCodigoLigaModal.value.trim();
-            
+
             if (!codigoLiga) {
                 modalLeagueMessage.textContent = "Debes ingresar el código de la liga.";
                 modalLeagueMessage.className = "alert alert-warning mt-3";
@@ -287,7 +315,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Verificar la Liga por el código
             try {
-                const response = await fetch(`http://localhost:3000/api/league/code/${codigoLiga}`);
+                const API_URL = window.location.origin.includes('localhost') ? "http://localhost:3000" : window.location.origin;
+                const response = await fetch(`${API_URL}/api/league/code/${codigoLiga}`);
                 const result = await response.json();
 
                 if (!response.ok) {
@@ -298,10 +327,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 // Guardamos leagueId y redirigimos a crear equipo
                 localStorage.setItem("leagueId", result.id);
-                
+
                 modalLeagueMessage.textContent = `¡Unido a ${result.nombre}! Redirigiendo a crear equipo...`;
                 modalLeagueMessage.className = "alert alert-success mt-3";
-                
+
                 // Ocultar el modal
                 const modalElement = document.getElementById('firstLoginLeagueModal');
                 const modalInstance = bootstrap.Modal.getInstance(modalElement);
@@ -311,7 +340,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 // Redirigir a Add_team.html
                 setTimeout(() => {
-                    window.location.href = "Add_team.html"; 
+                    window.location.href = "Add_team.html";
                 }, 1000);
 
 
@@ -330,9 +359,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // Si encontramos el botón, agregamos el listener
     if (btnBuscarLiga) {
         btnBuscarLiga.addEventListener("click", async () => {
-            
+
             // Si el contenedor de mensajes no existe, lo creamos temporalmente en el body para evitar errores
-            if (!modalVisitanteMessage) { 
+            if (!modalVisitanteMessage) {
                 console.error("Falta el div #modalVisitanteMessage en el modal Visitar Liga.");
             } else {
                 modalVisitanteMessage.textContent = "";
@@ -351,7 +380,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             //  Verificar la Liga por el código
             try {
-                const response = await fetch(`http://localhost:3000/api/league/code/${codigoLiga}`);
+                const API_URL = window.location.origin.includes('localhost') ? "http://localhost:3000" : window.location.origin;
+                const response = await fetch(`${API_URL}/api/league/code/${codigoLiga}`);
                 const result = await response.json();
 
                 if (!response.ok) {
@@ -363,16 +393,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 
                 // Éxito: Guardar leagueId y limpiar datos de sesión
-                localStorage.setItem("leagueId", result.id || result._id); 
-                localStorage.removeItem("userRole"); 
-                localStorage.removeItem("userId"); 
+                localStorage.setItem("leagueId", result.id || result._id);
+                localStorage.removeItem("userRole");
+                localStorage.removeItem("userId");
                 localStorage.removeItem("teamId");
 
                 if (modalVisitanteMessage) {
                     modalVisitanteMessage.textContent = `Liga '${result.nombre}' encontrada. Redirigiendo...`;
                     modalVisitanteMessage.className = "alert alert-success mt-3";
                 }
-                
+
                 // Redirigir a Home_liga.html
                 const modalElement = document.getElementById('modalVisitarLiga');
                 const modalInstance = bootstrap.Modal.getInstance(modalElement);
@@ -381,7 +411,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 
                 setTimeout(() => {
-                    window.location.href = "Home_liga.html"; 
+                    window.location.href = "Home_liga.html";
                 }, 1000);
 
 

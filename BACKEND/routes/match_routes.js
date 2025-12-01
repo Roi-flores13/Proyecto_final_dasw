@@ -17,5 +17,14 @@ router.post("/league/:leagueId/generate", matchController.generateFixtures); // 
 // Ruta para actualizar el resultado de un partido
 router.put("/:matchId/result", matchController.updateMatchResult); // PUT /api/match/:matchId/result
 
+// Ruta para verificar el resultado de un partido (Capitanes)
+router.put("/:matchId/verify", matchController.verifyMatchResult); // PUT /api/match/:matchId/verify
+
+// Ruta para crear un partido manualmente
+router.post("/create", matchController.createMatch); // POST /api/match/create
+
+// Ruta para eliminar un partido
+router.delete("/:matchId", matchController.deleteMatch); // DELETE /api/match/:matchId
+
 // Exportamos el router para que server.js lo pueda usar
 module.exports = router; // Dejamos disponible el router

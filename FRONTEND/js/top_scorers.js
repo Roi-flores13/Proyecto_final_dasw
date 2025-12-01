@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", async () => {
-    const userRole = localStorage.getItem("userRole"); 
-    const generalBtn = document.querySelector('a[href="General_view.html"]'); 
+    const userRole = localStorage.getItem("userRole");
+    const generalBtn = document.querySelector('a[href="General_view.html"]');
 
     if (generalBtn && userRole !== "capitan") {
         generalBtn.href = "Home_liga.html";
@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // 1. VARIABLES GLOBALES
     // Guardaremos aquí la lista completa que viene del servidor para no tener que
     // hacer peticiones nuevas cada vez que filtramos.
-    let allScorers = []; 
+    let allScorers = [];
 
     const leagueId = localStorage.getItem("leagueId");
     const tableBody = document.querySelector(".players-table tbody");
@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             // Si hay datos, los guardamos en nuestra variable global
             if (data.scorers && data.scorers.length > 0) {
                 allScorers = data.scorers;
-                
+
                 // Pintamos la tabla con TODOS los jugadores al principio
                 renderTable(allScorers);
             } else {
@@ -62,15 +62,21 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             // Icono de trofeo para el primer lugar (solo si estamos viendo la lista completa o es el que tiene más goles)
             // Nota: El index es relativo a la lista filtrada.
-            const rankDisplay = (allScorers.indexOf(player) === 0) 
-                ? '<i class="bi bi-trophy-fill text-warning"></i>' 
+            const rankDisplay = (allScorers.indexOf(player) === 0)
+                ? '<i class="bi bi-trophy-fill text-warning"></i>'
                 : allScorers.indexOf(player) + 1; // Muestra el ranking REAL global, no el filtrado
+
+            // Logo del equipo
+            const teamLogo = player.logo || "https://placehold.co/30x30/cccccc/ffffff?text=E";
 
             const row = `
                 <tr>
                     <td class="rank text-center">${rankDisplay}</td>
                     <td class="fw-bold">${player.name}</td>
-                    <td class="text-muted small">${player.team}</td>
+                    <td class="text-muted small">
+                        <img src="${teamLogo}" alt="${player.team}" class="rounded-circle me-1" style="width: 25px; height: 25px; object-fit: cover;">
+                        ${player.team}
+                    </td>
                     <td>
                         <span class="badge ${badgeColor}">${player.position || 'N/A'}</span>
                     </td>
@@ -104,14 +110,14 @@ document.addEventListener("DOMContentLoaded", async () => {
                     if (!player.position) return false;
 
                     const pPos = player.position.toLowerCase();
-                    
+
                     // Mapeo especial: El botón dice 'medio' pero la BD dice 'Mediocampista'
                     if (filterCriteria === "medio") {
                         return pPos === "mediocampista" || pPos === "medio";
                     }
-                    
+
                     // Para delantero y defensa suele coincidir
-                    return pPos === filterCriteria; 
+                    return pPos === filterCriteria;
                 });
             }
 

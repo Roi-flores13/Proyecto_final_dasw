@@ -1,10 +1,9 @@
-// frontend/js/general_view.js
 
-const API_URL = 'http://localhost:3000/api';
+const API_URL = window.location.origin.includes('localhost') ? "http://localhost:3000/api" : `${window.location.origin}/api`;
 
 document.addEventListener('DOMContentLoaded', async () => {
     const leagueId = localStorage.getItem('leagueId');
-    const userRole = localStorage.getItem('userRole') || 'visitor'; 
+    const userRole = localStorage.getItem('userRole') || 'visitor';
     const myTeamName = localStorage.getItem('teamName') || 'Mi Equipo'; // Nombre provisional si no hay dato
 
     if (!leagueId) {
@@ -14,7 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 1. INTENTAR RECUPERAR NOMBRE DE LIGA
     let leagueNameStored = localStorage.getItem('leagueName');
-    
+
     // Si no tenemos el nombre, lo pedimos al backend
     if (!leagueNameStored || leagueNameStored === "undefined") {
         try {
@@ -79,7 +78,7 @@ function processMatches(matches, role, teamName) {
     // Nota: Como 'teamName' puede no estar guardado en login.js, esto podría ocultar partidos.
     // Para ver algo ahora mismo, comentamos el filtro estricto o asegurate de que teamName coincida.
     if (role === 'captain' && teamName !== 'Mi Equipo') {
-         filteredMatches = matches.filter(m => m.home === teamName || m.away === teamName);
+        filteredMatches = matches.filter(m => m.home === teamName || m.away === teamName);
     }
 
     const now = new Date();
@@ -102,12 +101,13 @@ function processMatches(matches, role, teamName) {
     validMatches.sort((a, b) => a.dateObj - b.dateObj);
 
     // LÓGICA:
-    // Próximo juego: El primero que tenga fecha >= hoy. Si no hay, tomamos uno "Por definir".
-    const upcoming = validMatches.find(m => m.dateObj >= now) || pendingDateMatches[0];
-    
-    // Juego anterior: El último que tenga fecha < hoy.
-    // Filtramos los pasados y tomamos el último (reverse)
-    const past = validMatches.filter(m => m.dateObj < now).pop(); 
+    // Próximo juego: El primero que tenga fecha >= hoy Y que NO esté jugado.
+    const upcoming = validMatches.find(m => m.dateObj >= now && m.status !== 'jugado') || pendingDateMatches.find(m => m.status !== 'jugado');
+
+    // Juego anterior: El último que tenga fecha < hoy O que ya esté jugado.
+    const pastMatches = validMatches.filter(m => m.dateObj < now || m.status === 'jugado');
+    pastMatches.sort((a, b) => b.dateObj - a.dateObj); // Orden descendente
+    const past = pastMatches[0];
 
     renderNextMatch(upcoming, role);
     renderPrevMatch(past, role);
@@ -125,12 +125,22 @@ function renderNextMatch(match, role) {
     // Si no tiene fecha, mostramos "Por definir"
     const dateText = match.date ? `${match.date} - ${match.time}` : "Fecha por definir";
 
+    // Logos (usamos un placeholder si no hay)
+    const homeLogo = match.homeLogo || "https://placehold.co/50x50/cccccc/ffffff?text=L";
+    const awayLogo = match.awayLogo || "https://placehold.co/50x50/cccccc/ffffff?text=V";
+
     container.innerHTML = `
         <h5 class="card-title text-muted mb-3" style="font-size: 0.9rem;">${dateText}</h5>
         <div class="d-flex justify-content-between align-items-center w-100 mb-3 px-2">
-            <div class="text-end w-40 fw-bold text-truncate">${match.home}</div>
+            <div class="text-end w-40 fw-bold text-truncate d-flex align-items-center justify-content-end">
+                <span class="me-2">${match.home}</span>
+                <img src="${homeLogo}" alt="${match.home}" class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover;">
+            </div>
             <div class="badge bg-primary rounded-pill px-3">VS</div>
-            <div class="text-start w-40 fw-bold text-truncate">${match.away}</div>
+            <div class="text-start w-40 fw-bold text-truncate d-flex align-items-center justify-content-start">
+                <img src="${awayLogo}" alt="${match.away}" class="rounded-circle me-2" style="width: 30px; height: 30px; object-fit: cover;">
+                <span>${match.away}</span>
+            </div>
         </div>
         <p class="card-text small text-muted mb-3">
             <i class="bi bi-geo-alt-fill text-danger"></i> ${match.stadium}
@@ -151,21 +161,30 @@ function renderPrevMatch(match, role) {
     }
 
     // CORRECCIÓN 1: Definir el texto del estado dinámicamente
-    // Si status es 'jugado', dice Finalizado. Si no, dice Pendiente (aunque la fecha ya haya pasado).
     const statusText = match.status === 'jugado' ? "Finalizado" : "Pendiente por resultado";
-    
-    // CORRECCIÓN 2: Si el score es "vs" (porque no se ha jugado), lo mostramos en gris
+
+    // CORRECCIÓN 2: Si el score es "vs", lo mostramos en gris
     const scoreColorClass = match.score.includes("-") ? "text-dark" : "text-muted";
+
+    // Logos
+    const homeLogo = match.homeLogo || "https://placehold.co/50x50/cccccc/ffffff?text=L";
+    const awayLogo = match.awayLogo || "https://placehold.co/50x50/cccccc/ffffff?text=V";
 
     container.innerHTML = `
         <h5 class="card-title text-muted mb-3" style="font-size: 0.9rem;">${match.date} - ${statusText}</h5>
         
         <div class="d-flex justify-content-between align-items-center w-100 mb-3 px-2">
-            <div class="text-end w-40 fw-bold text-secondary text-truncate">${match.home}</div>
+            <div class="text-end w-40 fw-bold text-secondary text-truncate d-flex align-items-center justify-content-end">
+                <span class="me-2">${match.home}</span>
+                <img src="${homeLogo}" alt="${match.home}" class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover;">
+            </div>
             
             <div class="fw-bold fs-5 px-2 text-nowrap ${scoreColorClass}">${match.score}</div>
             
-            <div class="text-start w-40 fw-bold text-secondary text-truncate">${match.away}</div>
+            <div class="text-start w-40 fw-bold text-secondary text-truncate d-flex align-items-center justify-content-start">
+                <img src="${awayLogo}" alt="${match.away}" class="rounded-circle me-2" style="width: 30px; height: 30px; object-fit: cover;">
+                <span>${match.away}</span>
+            </div>
         </div>
         <button onclick="goToMatchDetail('${match.id}')" class="btn btn-outline-secondary btn-sm rounded-pill px-4">
             Ver ficha
@@ -191,26 +210,29 @@ async function loadTopScorersData(leagueId, role, teamName) {
 }
 
 function renderScorersTable(scorers, role, teamName) {
-     const tbody = document.getElementById('tabla-goleadores-home');
-     if (!tbody) return;
-     tbody.innerHTML = '';
-     
-     if (!scorers || scorers.length === 0) {
+    const tbody = document.getElementById('tabla-goleadores-home');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (!scorers || scorers.length === 0) {
         tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-3">Sin registros aún.</td></tr>`;
         return;
-     }
-     
-     scorers.slice(0, 5).forEach((player, index) => {
+    }
+
+    scorers.slice(0, 5).forEach((player, index) => {
         const rankIcon = index === 0 ? '<i class="bi bi-trophy-fill text-warning"></i>' : `<span class="text-muted fw-bold small">${index + 1}</span>`;
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td class="ps-4">${rankIcon}</td>
             <td class="fw-semibold text-dark">${player.name}</td>
-            <td class="text-muted small">${player.team}</td>
+            <td class="text-muted small">
+                <img src="${player.logo || 'https://placehold.co/20x20/cccccc/ffffff?text=E'}" alt="${player.team}" class="rounded-circle me-1" style="width: 20px; height: 20px; object-fit: cover;">
+                ${player.team}
+            </td>
             <td class="text-center pe-4 fw-bold text-success">${player.goals}</td>
         `;
         tbody.appendChild(tr);
-     });
+    });
 }
 
 window.goToMatchDetail = (matchId) => {

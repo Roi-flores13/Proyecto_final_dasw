@@ -16,6 +16,7 @@ const teamSchema = new mongoose.Schema({
         lost:   { type: Number, default: 0 },
         gf:     { type: Number, default: 0 }, // Goles a Favor
         ga:     { type: Number, default: 0 }, // Goles en Contra
+        gd:     { type: Number, default: 0 }, // Diferencia de Goles
         points: { type: Number, default: 0 }  // Puntos Totales
     }
 });

@@ -7,19 +7,35 @@ const createPlayer = async (req, res) => { // Definimos la función que manejar�
         // Sacamos del body los datos que nos manda el frontend
         const { name, number, position, teamId } = req.body; // Leemos los campos que esperamos
 
-        // Creamos un nuevo objeto Player con esos datos
+        // 🔎 1. Si viene un dorsal, revisamos que NO esté repetido en el mismo equipo
+        if (number) {
+            // Buscamos en la colección si ya hay un jugador con ese dorsal en ese equipo
+            const existingPlayerWithDorsal = await Player.findOne({
+                team: teamId,   // mismo equipo
+                number: number  // mismo número de camiseta
+            });
+
+            // Si encontramos uno, regresamos error 400 y NO creamos el jugador
+            if (existingPlayerWithDorsal) {
+                return res.status(400).json({
+                    mensaje: `El dorsal ${number} ya está en uso por otro jugador del equipo.`
+                });
+            }
+        }
+
+        // 2. Creamos un nuevo objeto Player con esos datos
         const newPlayer = new Player({ // Armamos el objeto que se va a guardar
             name: name,           // Guardamos el nombre del jugador
-            number: number,       // Guardamos el número de camiseta
+            number: number,       // Guardamos el número de camiseta (puede ser null)
             position: position,   // Guardamos la posición en la cancha
             team: teamId          // Guardamos el id del equipo al que pertenece
             // total_goals se va en 0 por defecto según el modelo
         });
 
-        // Guardamos el jugador en MongoDB
+        // 3. Guardamos el jugador en MongoDB
         await newPlayer.save(); // Ejecutamos el guardado en la base
 
-        // Enviamos una respuesta al frontend
+        // 4. Enviamos una respuesta al frontend
         return res.status(201).json({
             mensaje: "Jugador creado correctamente", // Mensaje simple
             player: {                  // Regresamos algunos datos útiles

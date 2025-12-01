@@ -47,15 +47,21 @@ document.addEventListener("DOMContentLoaded", async () => {
             // Calculamos la diferencia de goles (GF - GC)
             // (Tu modelo 'stats' ya tiene los datos listos)
             const diff = (team.stats.gf || 0) - (team.stats.ga || 0);
-            
+
             // Ponemos un signo '+' si la diferencia es positiva para que se vea mejor (ej: +5)
             const diffDisplay = diff > 0 ? `+${diff}` : diff;
+
+            // Logo del equipo (si existe)
+            const teamLogo = team.logo || "https://placehold.co/30x30/cccccc/ffffff?text=E";
 
             const row = `
                 <tr>
                     <td class="rank fw-bold">${index + 1}</td>
                     
-                    <td class="team-name text-start">${team.name}</td>
+                    <td class="team-name text-start">
+                        <img src="${teamLogo}" alt="${team.name}" class="rounded-circle me-2" style="width: 30px; height: 30px; object-fit: cover;">
+                        ${team.name}
+                    </td>
                     
                     <td>${team.stats.played || 0}</td>
                     <td>${team.stats.won || 0}</td>
