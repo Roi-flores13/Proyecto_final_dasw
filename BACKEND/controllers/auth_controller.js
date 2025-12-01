@@ -61,7 +61,7 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
     try {
         // Obtenemos el correo y la contraseña del cuerpo de la petición
-        const { email, password, codigo_liga} = req.body;
+        const { email, password, codigo_liga } = req.body;
 
         // Buscamos un usuario que tenga ese correo
         const user = await User.findOne({ email });
@@ -84,22 +84,31 @@ const loginUser = async (req, res) => {
         let redirectPage = "General_view.html"; // Por defecto para visitantes o si tiene equipo
         let currentLeagueId = null;
         let currentTeamId = null;
-        
+
         // El Super Admin siempre va a su panel, no necesita código de liga para esta lógica.
         if (user.rol === "admin") {
 
             const league = await League.findOne({ admin: user._id });
 
-            if(!league) {
-                redirectPage = "Login.html";
+            if (!league) {
+                // Si es admin pero no tiene liga (fue borrada), no debería poder entrar como admin normal.
+                // O bien le permitimos entrar para crear una nueva, o le damos error.
+                // Dado que el flujo actual asume 1 admin = 1 liga, si no tiene liga, es un estado inválido para "entrar al panel".
+                // Lo mejor es avisarle o redirigirlo a crear liga.
+
+                // Opción A: Error
+                return res.status(400).json({ mensaje: "Tu liga ha sido eliminada. Crea una nueva cuenta o contacta soporte." });
+
+                // Opción B (Más amigable): Redirigir a crear liga (requeriría lógica frontend extra)
+                // redirectPage = "Create_league.html"; 
             } else {
                 currentLeagueId = league._id; // Guardamos el ID de la liga
                 redirectPage = "Admin_liga.html";
             }
-        } 
-        
+        }
+
         else if (user.rol === "capitan") {
-            
+
             // Verificamos que haya código de liga
             if (!codigo_liga) {
                 return res.status(400).json({ mensaje: "Debe ingresar un Código de Liga" });
@@ -122,7 +131,7 @@ const loginUser = async (req, res) => {
                 redirectPage = "Add_team.html";
             } else {
                 // Si tiene equipo, guardamos su ID 
-                currentTeamId = team._id; 
+                currentTeamId = team._id;
             }
         }
 

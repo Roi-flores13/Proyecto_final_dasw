@@ -46,6 +46,16 @@ async function loadLeagueDetails() {
 
         if (!response.ok) {
             console.error('Error al obtener la liga:', result.mensaje);
+
+            // Si la liga no existe (404), es probable que haya sido borrada.
+            // Limpiamos la sesión para evitar bucles infinitos y redirigimos.
+            if (response.status === 404) {
+                alert("La liga no existe o ha sido eliminada. Cerrando sesión...");
+                localStorage.clear();
+                window.location.href = "Login.html";
+                return;
+            }
+
             alert(`Error al cargar datos de la liga: ${result.mensaje}`);
             return;
         }

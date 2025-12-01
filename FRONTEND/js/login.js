@@ -10,8 +10,31 @@ document.addEventListener("DOMContentLoaded", () => {
     if (storedUserId && storedUserRole) {
         // Evitar bucle si algo falla, pero por norma general redirigimos
         if (storedUserRole === 'admin') {
-            window.location.href = "Admin_liga.html";
-            return;
+            // VERIFICACIÓN EXTRA: Si es admin, verificar que la liga exista antes de redirigir
+            // Esto evita bucles infinitos si la liga fue borrada
+            if (storedLeagueId) {
+                const API_URL = window.location.origin.includes('localhost') ? "http://localhost:3000" : window.location.origin;
+                fetch(`${API_URL}/api/league/find/${storedLeagueId}`)
+                    .then(res => {
+                        if (res.ok) {
+                            window.location.href = "Admin_liga.html";
+                        } else {
+                            // Si la liga no existe (404 o error), limpiamos sesión y nos quedamos en Login
+                            console.warn("Liga no encontrada, limpiando sesión de admin.");
+                            localStorage.clear();
+                            // No redirigimos, nos quedamos aquí para que se loguee de nuevo
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Error verificando liga en auto-login:", err);
+                        // Si hay error de red, mejor no redirigir para no bloquear
+                    });
+                return; // Esperamos a que el fetch decida
+            } else {
+                // Si es admin pero no tiene leagueId, algo anda mal o es un admin global (no implementado)
+                // Mejor limpiar
+                localStorage.clear();
+            }
         } else if (storedUserRole === 'capitan') {
             if (storedLeagueId) {
                 window.location.href = "General_view.html";
